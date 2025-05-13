@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Yapay Zeka Macerası</title>
+  <!-- CSS dosyamız -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- Arka plan müziği (loop) -->
+  <audio id="bgMusic" src="audio/bg-music.mp3" loop></audio>
+
+  <div id="gameContainer">
+
+    <!-- ANA MENÜ EKRANI -->
+    <div id="mainMenu" class="screen active">
+      <img src="images/background-main.jpg" alt="Arka Plan" class="background"/>
+      <div class="menu-content">
+        <h1>Yapay Zeka Evrenine Hoş Geldin!</h1>
+        <button id="startBtn">Macera Başlasın</button>
+      </div>
+    </div>
+
+    <!-- HİKAYE EKRANI -->
+    <div id="storyScreen" class="screen">
+      <img src="images/background-main.jpg" alt="Arka Plan" class="background"/>
+      <div class="story-content">
+        <img src="images/tegvbot.png" alt="tegvBot" class="character" />
+        <p id="storyText">
+          Merhaba cesur kâşif! Ben tegvBot, 
+          Yapay Zeka Evreni'nin sevimli rehberi.
+          <br><br>
+          Bu evrende işler yolunda gitmiyor: 
+          Veri merkezleri dağılmış, algoritma ormanında hatalar oluşmuş,
+          robotik atölyesinde tuhaf arızalar çıkmış! 
+          <br><br>
+          Altı mini-gezegene uğrayacağız; her birinde
+          yapay zekânın farklı bir yönünü öğrenip 
+          5 eğlenceli bulmacayı çözeceğiz. 
+          <br><br>
+          Hadi, gezegenleri eski haline döndürelim ve harika maceraya başlayalım!
+        </p>
+        <button id="goToPlanetsBtn">Hadi Gidelim!</button>
+      </div>
+    </div>
+
+    <!-- GEZEGEN SEÇİM EKRANI -->
+    <div id="planetSelectionScreen" class="screen">
+      <img src="images/background-main.jpg" alt="Arka Plan" class="background" />
+      <h2>Gezegen Seçimi</h2>
+      <p class="subtext">
+        6 gezegen var. Her birinde <b>5 bulmaca</b> seni bekliyor. 
+        Bir gezegeni bitirince tekrar giremezsin. 
+      </p>
+      <div class="planets">
+        <div class="planet" data-planet="0">
+          <img src="images/planet1.png" alt="Algoritma Ormanı Gezegeni" />
+          <p>Algoritma Ormanı Gezegeni</p>
+        </div>
+        <div class="planet" data-planet="1">
+          <img src="images/planet2.png" alt="Veri Yükleme Gezegeni" />
+          <p>Veri Yükleme Gezegeni</p>
+        </div>
+        <div class="planet" data-planet="2">
+          <img src="images/planet3.png" alt="Makine Öğrenimi Gezegeni" />
+          <p>Makine Öğrenimi Gezegeni</p>
+        </div>
+        <div class="planet" data-planet="3">
+          <img src="images/planet4.png" alt="Doğal Dil İşleme Gezegeni" />
+          <p>Doğal Dil İşleme Gezegeni</p>
+        </div>
+        <div class="planet" data-planet="4">
+          <img src="images/planet5.png" alt="Robotik Atölyesi Gezegeni" />
+          <p>Robotik Atölyesi Gezegeni</p>
+        </div>
+        <div class="planet" data-planet="5">
+          <img src="images/planet6.png" alt="Etik Yapay Zeka Gezegeni" />
+          <p>Etik Yapay Zeka Gezegeni</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- GEZEGEN BİLGİ EKRANI -->
+    <div id="planetInfoScreen" class="screen">
+      <img src="images/background-main.jpg" alt="Arka Plan" class="background" />
+      <div class="info-content">
+        <h2 id="planetInfoTitle"></h2>
+        <img id="planetInfoImage" src="" alt="Planet Info" class="planet-info-img" />
+        <p id="planetInfoText"></p>
+        <button id="startPuzzlesBtn">Bulmacalara Başla</button>
+      </div>
+    </div>
+
+    <!-- PUZZLE EKRANI -->
+    <div id="planetPuzzleScreen" class="screen">
+      <img src="images/background-main.jpg" alt="Arka Plan" class="background" />
+      <div class="puzzle-content">
+        <h2 id="planetPuzzleTitle"></h2>
+        <p id="puzzleHintText" class="puzzle-hint"></p>
+        <div id="puzzleArea"></div>
+        <div id="notificationArea"></div>
+      </div>
+    </div>
+
+    <!-- OYUN BİTİŞ EKRANI -->
+    <div id="endingScreen" class="screen">
+      <img src="images/background-main.jpg" alt="Arka Plan" class="background" />
+      <div class="ending-content">
+        <h2>Tebrikler!</h2>
+        <p>Yapay Zeka Evreni'nin tüm mini-gezegenlerini kurtardın! Harika bir iş çıkardın.</p>
+        <audio id="victorySound" src="audio/victory.mp3"></audio>
+        <button id="restartBtn">Yeni Maceraya Başla</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/mobile-support.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

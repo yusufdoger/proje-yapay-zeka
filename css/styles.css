@@ -1,0 +1,422 @@
+/* GENEL AYARLAR */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #000; /* Yüklenmezse siyah görünür */
+  color: #fff;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+}
+
+/*
+  .screen => Mutlaka relative konum veriyoruz ki .background z-index:0 ile altına yerleşebilsin.
+*/
+.screen {
+  position: absolute; /* Mevcut yapınızda absolute ise koruyoruz */
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  z-index: 0; /* Arka plan resmiyle aynı katmanda */
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ARKA PLAN RESMİ */
+.background {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Zemin katmanına koyalım, tıklamayı engellememek için pointer-events none */
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ANA MENÜ */
+#mainMenu .menu-content {
+  /* İçerik katmanını üstte tutmak için */
+  position: relative;
+  z-index: 1;
+}
+#mainMenu h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+#mainMenu button {
+  padding: 12px 30px;
+  font-size: 1.2em;
+  cursor: pointer;
+  background-color: #ff9800;
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#mainMenu button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.7);
+}
+
+#mainMenu button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(255, 152, 0, 0.5);
+}
+
+/* HİKAYE EKRANI */
+.story-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+.story-content .character {
+  width: 300px;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.story-content p {
+  font-size: 1.2em;
+  margin: 20px auto;
+  text-align: center;
+}
+
+#goToPlanetsBtn {
+  padding: 12px 30px;
+  font-size: 1.2em;
+  cursor: pointer;
+  background-color: #ff9800;
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#goToPlanetsBtn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.7);
+}
+
+#goToPlanetsBtn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(255, 152, 0, 0.5);
+}
+
+/* GEZEGEN SEÇİM EKRANI */
+#planetSelectionScreen h2 {
+  margin-top: 60px;
+  font-size: 2.2em;
+  opacity: 1;
+  font-weight: bold;
+}
+#planetSelectionScreen .subtext {
+  margin-top: 10px;
+  font-size: 1.2em;
+  opacity: 1;
+  font-weight: 600;
+}
+.planets {
+  display: flex;
+  flex-wrap: nowrap; /* Tek satırda kalması için */
+  justify-content: center;
+  align-items: center;
+  gap: 15px; /* Gezegenler arası boşluk */
+  margin-top: 40px;
+  padding: 0 20px; /* Kenarlardan boşluk */
+  overflow-x: auto; /* Yatay kaydırma gerekirse */
+  width: 100%;
+  max-width: 1400px; /* Maksimum genişlik */
+  margin-left: auto;
+  margin-right: auto;
+}
+.planet {
+  cursor: pointer;
+  text-align: center;
+  width: 180px; /* Gezegen genişliği */
+  flex-shrink: 0; /* Gezegenlerin küçülmesini engelle */
+  /* Gezegen ikonları salınır gibi animasyon */
+  animation: planetFloat 4s ease-in-out infinite;
+}
+@keyframes planetFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.planet img {
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  aspect-ratio: 1; /* Kare görünüm için */
+  object-fit: cover; /* Resmin oranını koru */
+}
+.planet img:hover {
+  transform: scale(1.1);
+}
+.planet p {
+  margin-top: 10px;
+  font-size: 0.9em; /* Yazı boyutunu küçült */
+  white-space: nowrap; /* Yazının alt satıra geçmesini engelle */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Uzun yazıları ... ile göster */
+}
+.planet.completed {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* GEZEGEN BİLGİ EKRANI */
+.info-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+#planetInfoTitle {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+#planetInfoImage {
+  width: 200px;
+  margin: 20px 0;
+}
+#planetInfoText {
+  font-size: 1.1em;
+  margin: 20px 0;
+}
+#startPuzzlesBtn {
+  padding: 10px 20px;
+  font-size: 1.1em;
+  cursor: pointer;
+  background-color: #ffc107;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+}
+
+/* PUZZLE EKRANI */
+.puzzle-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+#planetPuzzleTitle {
+  font-size: 1.6em;
+  margin-bottom: 10px;
+  
+}
+.puzzle-hint {
+  font-style: italic;
+  margin-bottom: 10px;
+  color: #ffc107;
+}
+#puzzleArea {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 320px;
+  min-height: 240px;
+  margin-top: 10px;
+}
+#notificationArea {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  min-height: 40px;
+  width: 80%;
+  max-width: 500px;
+  pointer-events: none;
+}
+
+/* OYUN BİTİŞ EKRANI */
+.ending-content {
+  max-width: 800px;
+  z-index: 1;
+  position: relative;
+}
+.ending-content h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+.ending-content p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+#restartBtn {
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  background-color: #ffeb3b;
+  border: none;
+  border-radius: 8px;
+  color: #000;
+}
+
+/* Başarı / hata mesajları */
+.message {
+  padding: 10px;
+  margin: 5px auto;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.message.success {
+  background-color: #4caf50;
+  color: #fff;
+}
+.message.error {
+  background-color: #f44336;
+  color: #fff;
+}
+
+/* DRAG & DROP */
+.draggable {
+  background-color: #333;
+  border: 2px dashed #555;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: move;
+  display: inline-block;
+}
+.dropzone {
+  background-color: #222;
+  border: 2px solid #666;
+  min-width: 100px;
+  min-height: 50px;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+/* HAFIZA (MEMORY) KARTLARI */
+.memory-card {
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  display: inline-block;
+  background-size: cover;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* MOBİL UYUMLULUK - RESPONSIVE TASARIM */
+@media (max-width: 768px) {
+  /* ANA MENÜ */
+  #mainMenu h1 {
+    font-size: 1.6em;
+  }
+  
+  /* HİKAYE EKRANI */
+  .story-content .character {
+    width: 200px;
+  }
+  .story-content p {
+    font-size: 1em;
+  }
+  
+  /* GEZEGEN SEÇİM EKRANI */
+  #planetSelectionScreen h2 {
+    font-size: 1.8em;
+    margin-top: 40px;
+  }
+  .planets {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .planet {
+    width: 140px;
+  }
+  
+  /* PUZZLE EKRANI */
+  .puzzle-content {
+    padding: 10px;
+  }
+  #planetPuzzleTitle {
+    font-size: 1.4em;
+  }
+  #puzzleArea {
+    min-width: 280px;
+    padding: 15px;
+  }
+  
+  /* Butonları büyüt (dokunmatik için) */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 15px;
+    margin: 5px;
+  }
+  
+  /* Sürükle-bırak elemanları */
+  .draggable {
+    padding: 15px;
+    margin: 8px;
+  }
+}
+
+/* ÇOK KÜÇÜK EKRANLAR */
+@media (max-width: 480px) {
+  #mainMenu h1 {
+    font-size: 1.4em;
+  }
+  .story-content .character {
+    width: 160px;
+  }
+  .story-content p {
+    font-size: 0.9em;
+  }
+  .planet {
+    width: 120px;
+  }
+  #puzzleArea {
+    min-width: 260px;
+    padding: 10px;
+  }
+  
+  /* Oyun içi butonlar ve alanlar */
+  #startBtn, #goToPlanetsBtn, #startPuzzlesBtn, #restartBtn {
+    font-size: 1em;
+    padding: 8px 16px;
+  }
+  
+  /* Mesaj kutuları */
+  .message {
+    font-size: 0.9em;
+    padding: 8px;
+    width: 90%;
+  }
+}
