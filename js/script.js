@@ -109,6 +109,8 @@ const notificationArea = document.getElementById("notificationArea");
  *******************************************************/
 const bgMusic = document.getElementById("bgMusic");
 const victorySound = document.getElementById("victorySound");
+const volumeSlider = document.getElementById("volumeSlider");
+const planetVolumeSlider = document.getElementById("planetVolumeSlider");
 
 /*******************************************************
  * SES FONKSİYONLARI
@@ -126,6 +128,49 @@ function playWrongSound() {
   wrongSound.play();
 }
 
+// Ses kontrolü ayarı
+function initAudioControl() {
+  // Başlangıç ses seviyesini ayarla
+  const savedVolume = localStorage.getItem('musicVolume') || 50;
+  
+  if (volumeSlider) {
+    volumeSlider.value = savedVolume;
+    bgMusic.volume = savedVolume / 100;
+    
+    // Ses seviyesi değiştiğinde müziği güncelle
+    volumeSlider.addEventListener('input', function() {
+      const newVolume = this.value;
+      bgMusic.volume = newVolume / 100;
+      
+      // Diğer slider'ı da güncelle
+      if (planetVolumeSlider) {
+        planetVolumeSlider.value = newVolume;
+      }
+      
+      // Kullanıcı tercihini localStorage'a kaydet
+      localStorage.setItem('musicVolume', newVolume);
+    });
+  }
+  
+  if (planetVolumeSlider) {
+    planetVolumeSlider.value = savedVolume;
+    
+    // Ses seviyesi değiştiğinde müziği güncelle
+    planetVolumeSlider.addEventListener('input', function() {
+      const newVolume = this.value;
+      bgMusic.volume = newVolume / 100;
+      
+      // Diğer slider'ı da güncelle
+      if (volumeSlider) {
+        volumeSlider.value = newVolume;
+      }
+      
+      // Kullanıcı tercihini localStorage'a kaydet
+      localStorage.setItem('musicVolume', newVolume);
+    });
+  }
+}
+
 /*******************************************************
  * OYUN DURUM DEĞİŞKENLERİ
  *******************************************************/
@@ -137,6 +182,233 @@ const totalPlanets = planetData.length;
 /*******************************************************
  * OYUN BAŞLANGIÇ AKIŞI
  *******************************************************/
+document.addEventListener('DOMContentLoaded', function() {
+  // Ses kontrolü başlat
+  initAudioControl();
+
+  createFullscreenButton();
+});
+
+// Tam ekran modu için JavaScript fonksiyonu
+// Tam ekran modu için JavaScript kodu
+// Tam ekran modu için JavaScript kodu
+// Tam ekran modu için JavaScript kodu
+function toggleFullScreen() {
+  if (!document.fullscreenElement &&
+      !document.mozFullScreenElement &&
+      !document.webkitFullscreenElement &&
+      !document.msFullscreenElement) {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    }
+    document.getElementById('fullscreenBtn').innerHTML = '🔍 Küçült';
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+    document.getElementById('fullscreenBtn').innerHTML = '🔍 Tam Ekran';
+  }
+}
+
+// Tam ekran butonunu oluşturan fonksiyon 
+function createFullscreenButton() {
+  // CSS stilini ekle
+  const style = document.createElement('style');
+  style.textContent = `
+    .fullscreen-control {
+      margin-top: 5px;
+      margin-bottom: 15px;
+      padding: 8px 15px;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    #fullscreenBtn {
+      background: linear-gradient(135deg, #2196F3, #03A9F4);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 8px 20px;
+      font-size: 0.9em;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(33, 150, 243, 0.5);
+      transition: all 0.3s ease;
+    }
+    
+    #fullscreenBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(33, 150, 243, 0.7);
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Gezegen seçim ekranındaki ses kontrolünden sonra tam ekran butonu ekle
+  const planetVolumeControl = document.querySelector('.planet-volume-control');
+  if (planetVolumeControl) {
+    // Tam ekran kontrolü container oluştur
+    const fullscreenControl = document.createElement('div');
+    fullscreenControl.className = 'fullscreen-control';
+    
+    // Tam ekran butonu oluştur
+    const fullscreenBtn = document.createElement('button');
+    fullscreenBtn.id = 'fullscreenBtn';
+    fullscreenBtn.innerHTML = '🔍 Tam Ekran';
+    fullscreenBtn.addEventListener('click', toggleFullScreen);
+    
+    // Butonu container'a ekle
+    fullscreenControl.appendChild(fullscreenBtn);
+    
+    // Ses kontrolünden sonra ekle
+    planetVolumeControl.parentNode.insertBefore(fullscreenControl, planetVolumeControl.nextSibling);
+  }
+}
+
+// Tam ekran butonlarını oluştur
+function createFullscreenButtons() {
+  // CSS stil ekle
+  const style = document.createElement('style');
+  style.textContent = `
+    .fullscreen-btn {
+      background: linear-gradient(135deg, #2196F3, #03A9F4);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      z-index: 100;
+    }
+    .fullscreen-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Ana menüye buton ekle
+  const mainMenuBtn = document.createElement('button');
+  mainMenuBtn.className = 'fullscreen-btn';
+  mainMenuBtn.innerHTML = '🔍 Tam Ekran';
+  mainMenuBtn.addEventListener('click', toggleFullScreen);
+  document.querySelector('#mainMenu .menu-content').appendChild(mainMenuBtn);
+  
+  // Gezegen seçim ekranına buton ekle
+  const planetSelectionBtn = document.createElement('button');
+  planetSelectionBtn.className = 'fullscreen-btn';
+  planetSelectionBtn.innerHTML = '🔍 Tam Ekran';
+  planetSelectionBtn.addEventListener('click', toggleFullScreen);
+  
+  // Subtext'ten sonra ekle
+  const planetSelectionSubtext = document.querySelector('#planetSelectionScreen .subtext');
+  if (planetSelectionSubtext) {
+    planetSelectionSubtext.parentNode.insertBefore(planetSelectionBtn, planetSelectionSubtext.nextSibling);
+  } else {
+    document.querySelector('#planetSelectionScreen').appendChild(planetSelectionBtn);
+  }
+}
+
+// Tam ekran butonunu oluştur
+function createFullscreenButton() {
+  // CSS stil ekle
+  const style = document.createElement('style');
+  style.textContent = `
+    .fullscreen-btn-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+    .fullscreen-btn {
+      background: linear-gradient(135deg, #2196F3, #03A9F4);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    .fullscreen-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Buton konteyneri oluştur
+  const container = document.createElement('div');
+  container.className = 'fullscreen-btn-container';
+  
+  // Tam ekran butonu oluştur
+  const fullscreenBtn = document.createElement('button');
+  fullscreenBtn.id = 'fullscreenBtn';
+  fullscreenBtn.className = 'fullscreen-btn';
+  fullscreenBtn.innerHTML = '🔍 Tam Ekran';
+  fullscreenBtn.addEventListener('click', toggleFullScreen);
+  
+  // Butonu sayfaya ekle
+  container.appendChild(fullscreenBtn);
+  document.body.appendChild(container);
+}
+
+// HTML'de eklenecek tam ekran butonu (menü ekranında macera başlasın butonunun altına ekle)
+const fullscreenButton = document.createElement('button');
+fullscreenButton.id = 'fullscreenBtn';
+fullscreenButton.className = 'btn fullscreen-btn';
+fullscreenButton.innerHTML = '🔍 Tam Ekran';
+fullscreenButton.addEventListener('click', toggleFullScreen);
+
+// Butonun menüye eklenmesi (bu kısmı kendi koduna göre uyarla)
+document.querySelector('#mainMenu .menu-content').appendChild(fullscreenButton);
+
+// CSS stilini head kısmına ekle
+const style = document.createElement('style');
+style.textContent = `
+  .fullscreen-btn {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #2196F3, #03A9F4) !important;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.5) !important;
+  }
+  
+  .fullscreen-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.7) !important;
+  }
+  
+  /* Tam ekran modunda scrollbar ve overflow ayarları */
+  :fullscreen, 
+  :-webkit-full-screen, 
+  :-moz-full-screen, 
+  :-ms-fullscreen {
+    overflow-y: auto !important;
+    height: 100vh;
+  }
+`;
+document.head.appendChild(style);
+
 document.getElementById("startBtn").addEventListener("click", () => {
   playClickSound();
   showScreen(storyScreen);
@@ -732,7 +1004,7 @@ function setupPlanet1Puzzle4() {
   puzzleHintText.innerText = "IPUCU: Meyve salatası yapmak için adımları doğru sırada sürükle.";
 
   let info = document.createElement("p");
-  info.innerText = "Meyve salatası yapmak için adımları doğru sırada yerleştir:";
+  info.innerText = "Meyve salatası yapmak için adımları doğru sırala:";
   info.style.fontSize = "1.2em";
   info.style.marginBottom = "20px";
   puzzleArea.appendChild(info);
@@ -764,161 +1036,263 @@ function setupPlanet1Puzzle4() {
   ];
   steps = shuffleArray(steps);
 
-  // Sürüklenen kartlar için container
-  let draggableContainer = document.createElement("div");
-  draggableContainer.style.display = "flex";
-  draggableContainer.style.gap = "20px";
-  draggableContainer.style.marginBottom = "30px";
-  draggableContainer.style.justifyContent = "center";
-  puzzleArea.appendChild(draggableContainer);
-
-  // Sürüklenen kartlar
-  steps.forEach(s => {
-    let cardContainer = document.createElement("div");
-    cardContainer.classList.add("card-container");
-    cardContainer.dataset.step = s.step;
-    cardContainer.style.display = "flex";
-    cardContainer.style.flexDirection = "column";
-    cardContainer.style.alignItems = "center";
-    cardContainer.style.gap = "10px";
+  // Ana konteyner
+  const gameContainer = document.createElement("div");
+  gameContainer.style.display = "flex";
+  gameContainer.style.flexDirection = "column";
+  gameContainer.style.alignItems = "center";
+  gameContainer.style.gap = "30px";
+  gameContainer.style.width = "100%";
+  gameContainer.style.maxWidth = "100%"; // Taşmayı engelle
+  
+  // Kartlar için alan - tek sırada üstte
+  const cardsContainer = document.createElement("div");
+  cardsContainer.style.display = "flex";
+  cardsContainer.style.flexWrap = "nowrap"; // Tek sırada
+  cardsContainer.style.justifyContent = "center";
+  cardsContainer.style.gap = "20px";
+  cardsContainer.style.width = "100%";
+  cardsContainer.style.maxWidth = "550px";
+  cardsContainer.style.marginBottom = "60px"; // Altındaki hedef alanına mesafe
+  cardsContainer.style.overflowX = "auto"; // Ekrana sığmayan kartlar için kaydırma
+  cardsContainer.style.paddingBottom = "15px"; // Kaydırma çubuğu için alan
+  
+  // Hedef alanlar için konteyner - tek sırada altta
+  const targetsContainer = document.createElement("div");
+  targetsContainer.style.display = "flex";
+  targetsContainer.style.flexWrap = "nowrap"; // Tek sırada
+  targetsContainer.style.justifyContent = "center";
+  targetsContainer.style.gap = "20px";
+  targetsContainer.style.width = "100%";
+  targetsContainer.style.maxWidth = "550px";
+  targetsContainer.style.overflowX = "auto"; // Ekrana sığmayan hedefler için kaydırma
+  targetsContainer.style.paddingBottom = "15px"; // Kaydırma çubuğu için alan
+  
+  // Kartları oluştur
+  steps.forEach(step => {
+    const card = document.createElement("div");
+    card.className = "recipe-card";
+    card.dataset.step = step.step;
+    card.dataset.placed = "false";
+    card.style.width = "100px";
+    card.style.height = "100px";
+    card.style.backgroundImage = `url("images/${step.img}")`;
+    card.style.backgroundSize = "cover";
+    card.style.backgroundPosition = "center";
+    card.style.borderRadius = "10px";
+    card.style.boxShadow = "0 4px 8px rgba(0,0,0,0.2)";
+    card.style.cursor = "pointer";
+    card.style.position = "relative";
+    card.style.userSelect = "none";
+    card.style.touchAction = "none";
+    card.style.marginBottom = "30px"; // Alt etiket için yer aç
+    card.style.flexShrink = "0"; // Boyutu sabit tut
     
-    let d = document.createElement("div");
-    d.classList.add("draggable");
-    d.dataset.order = s.step;
-    d.dataset.img = s.img;
-    d.dataset.label = s.label;
-    d.style.width = "100px";
-    d.style.height = "100px";
-    d.style.backgroundImage = `url("images/${s.img}")`;
-    d.style.backgroundSize = "cover";
-    d.style.borderRadius = "10px";
-    d.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
-    d.style.cursor = "move";
-    d.draggable = true;
-
-    let label = document.createElement("div");
-    label.innerText = s.label;
+    // Metin etiketi
+    const label = document.createElement("div");
+    label.innerText = step.label;
+    label.style.position = "absolute";
+    label.style.bottom = "-30px"; // Daha aşağıda
+    label.style.left = "0";
+    label.style.right = "0";
     label.style.textAlign = "center";
-    label.style.fontSize = "0.9em";
-    label.style.color = "#333";
+    label.style.fontSize = "14px";
     label.style.fontWeight = "bold";
-
-    d.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("text/plain", s.step);
-      e.dataTransfer.setData("img", s.img);
-      e.dataTransfer.setData("label", s.label);
-      d.style.opacity = "0.5";
-    });
-
-    d.addEventListener("dragend", (e) => {
-      d.style.opacity = "1";
-    });
-
-    cardContainer.appendChild(d);
-    cardContainer.appendChild(label);
-    draggableContainer.appendChild(cardContainer);
-  });
-
-  // Drop alanları için container
-  let dropZone = document.createElement("div");
-  dropZone.style.display = "flex";
-  dropZone.style.gap = "20px";
-  dropZone.style.marginTop = "20px";
-  dropZone.style.justifyContent = "center";
-
-  // 4 drop alanı
-  for(let i = 0; i < 4; i++) {
-    let slotContainer = document.createElement("div");
-    slotContainer.style.display = "flex";
-    slotContainer.style.flexDirection = "column";
-    slotContainer.style.alignItems = "center";
-    slotContainer.style.gap = "10px";
-
-    let slot = document.createElement("div");
-    slot.classList.add("dropzone");
-    slot.dataset.filled = "false"; // Doldurulmuş mu kontrolü
-    slot.style.width = "100px";
-    slot.style.height = "100px";
-    slot.style.border = "2px dashed #666";
-    slot.style.borderRadius = "10px";
-    slot.style.backgroundColor = "#f5f5f5";
-    slot.dataset.index = i + 1;
-
-    let stepNumber = document.createElement("div");
-    stepNumber.innerText = `Adım ${i + 1}`;
-    stepNumber.style.fontSize = "1em";
-    stepNumber.style.fontWeight = "bold";
-    stepNumber.style.color = "#333";
-    stepNumber.style.marginTop = "5px";
-
-    slot.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      if (slot.dataset.filled === "false") {
-        slot.style.backgroundColor = "#e0e0e0";
-      }
-    });
-
-    slot.addEventListener("dragleave", (e) => {
-      if (slot.dataset.filled === "false") {
-        slot.style.backgroundColor = "#f5f5f5";
-      }
-    });
-
-    slot.addEventListener("drop", (e) => {
-      e.preventDefault();
+    label.style.color = "#333";
+    label.style.width = "100%"; // Tam genişlik
+    label.style.marginTop = "5px"; // Üst boşluk
+    card.appendChild(label);
+    
+    // Dokunma ve sürükle olayları
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+    let currentTarget = null;
+    
+    // Fare ve dokunmatik olayları için ortak fonksiyonlar
+    function startDrag(clientX, clientY) {
+      if (card.dataset.placed === "true") return;
       
-      // Eğer slot zaten doldurulmuşsa işlemi iptal et
-      if (slot.dataset.filled === "true") {
-        playWrongSound();
-        showMessage("Bu alan zaten dolu!", "error");
-        setTimeout(clearMessage, 1500);
-        return;
+      isDragging = true;
+      startX = clientX;
+      startY = clientY;
+      
+      const rect = card.getBoundingClientRect();
+      initialX = rect.left;
+      initialY = rect.top;
+      
+      card.style.position = "fixed";
+      card.style.left = `${initialX}px`;
+      card.style.top = `${initialY}px`;
+      card.style.zIndex = "1000";
+      card.style.opacity = "0.8";
+      card.style.transform = "scale(1.05)";
+      
+      // Titreşim geri bildirimi
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);
       }
+    }
+    
+    function moveDrag(clientX, clientY) {
+      if (!isDragging) return;
       
-      // Verileri al
-      let step = e.dataTransfer.getData("text/plain");
-      let imgSrc = e.dataTransfer.getData("img");
-      let label = e.dataTransfer.getData("label");
+      const dx = clientX - startX;
+      const dy = clientY - startY;
       
-      // Doğru adım mı kontrol et
-      if (parseInt(step) === i + 1) {
-        // Doğru adım
+      card.style.left = `${initialX + dx}px`;
+      card.style.top = `${initialY + dy}px`;
+      
+      // Kart hangi hedefin üzerinde?
+      checkTargetCollision(clientX, clientY);
+    }
+    
+    function endDrag() {
+      if (!isDragging) return;
+      isDragging = false;
+      
+      if (currentTarget) {
+        const targetStep = parseInt(currentTarget.dataset.expectedStep);
+        const cardStep = parseInt(card.dataset.step);
+        
+        if (targetStep === cardStep) {
+          // Doğru hedef
         playCorrectSound();
         
-        // Slot'u güncelle
-        slot.style.backgroundImage = `url("images/${imgSrc}")`;
-        slot.style.backgroundSize = "cover";
-        slot.style.border = "2px solid #4caf50";
-        slot.style.backgroundColor = "#4caf50";
-        slot.dataset.filled = "true";
-        
-        // Orijinal görseli gizle
-        let originalCard = draggableContainer.querySelector(`.card-container[data-step="${step}"]`);
-        if (originalCard) {
-          originalCard.style.visibility = "hidden"; // display:none yerine visibility:hidden kullanarak yer tutucu olarak bırakıyoruz
-          originalCard.style.opacity = "0";
-        }
-        
-        // Tüm adımlar tamamlandı mı kontrol et
-        checkRecipeOrder();
+          card.style.position = "static";
+          card.style.opacity = "1";
+          card.style.transform = "none";
+          card.style.pointerEvents = "none";
+          card.dataset.placed = "true";
+          
+          currentTarget.appendChild(card);
+          currentTarget.dataset.filled = "true";
+          currentTarget.style.border = "2px solid #4caf50";
+          currentTarget.style.backgroundColor = "rgba(76, 175, 80, 0.2)";
+          
+          // Tüm hedefler dolu mu kontrol et
+          checkAllTargets();
       } else {
-        // Yanlış adım
+          // Yanlış hedef
+          resetCardPosition();
         playWrongSound();
         showMessage("Yanlış sıra! Bu adım buraya ait değil.", "error");
         setTimeout(clearMessage, 1500);
       }
+      } else {
+        // Hedef yok, kartı orijinal konumuna döndür
+        resetCardPosition();
+      }
+      
+      currentTarget = null;
+    }
+    
+    function resetCardPosition() {
+      card.style.position = "static";
+      card.style.left = "auto";
+      card.style.top = "auto";
+      card.style.zIndex = "auto";
+      card.style.opacity = "1";
+      card.style.transform = "none";
+    }
+    
+    function checkTargetCollision(clientX, clientY) {
+      // Önceki hedefi temizle
+      if (currentTarget) {
+        currentTarget.style.backgroundColor = "rgba(245, 245, 245, 0.8)";
+      }
+      currentTarget = null;
+      
+      // Tüm hedefleri kontrol et
+      const targets = targetsContainer.querySelectorAll('.recipe-target');
+      targets.forEach(target => {
+        if (target.dataset.filled === "true") return;
+        
+        const rect = target.getBoundingClientRect();
+        if (
+          clientX >= rect.left &&
+          clientX <= rect.right &&
+          clientY >= rect.top &&
+          clientY <= rect.bottom
+        ) {
+          currentTarget = target;
+          target.style.backgroundColor = "rgba(255, 152, 0, 0.2)";
+        }
+      });
+    }
+    
+    // Fare olayları
+    card.addEventListener('mousedown', (e) => {
+      startDrag(e.clientX, e.clientY);
     });
-
-    slotContainer.appendChild(slot);
-    slotContainer.appendChild(stepNumber);
-    dropZone.appendChild(slotContainer);
+    
+    document.addEventListener('mousemove', (e) => {
+      moveDrag(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('mouseup', () => {
+      endDrag();
+    });
+    
+    // Dokunmatik olaylar
+    card.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      startDrag(touch.clientX, touch.clientY);
+      e.preventDefault(); // Sayfanın kaydırılmasını engelle
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const touch = e.touches[0];
+      moveDrag(touch.clientX, touch.clientY);
+      e.preventDefault(); // Sayfanın kaydırılmasını engelle
+    }, { passive: false });
+    
+    document.addEventListener('touchend', () => {
+      endDrag();
+    });
+    
+    cardsContainer.appendChild(card);
+  });
+  
+      // Hedef alanları oluştur
+  for (let i = 0; i < 4; i++) {
+    const target = document.createElement("div");
+    target.className = "recipe-target";
+    target.dataset.expectedStep = i + 1;
+    target.dataset.filled = "false";
+    target.style.width = "100px";
+    target.style.height = "100px";
+    target.style.border = "2px dashed #666";
+    target.style.borderRadius = "10px";
+    target.style.backgroundColor = "rgba(245, 245, 245, 0.8)";
+    target.style.display = "flex";
+    target.style.alignItems = "center";
+    target.style.justifyContent = "center";
+    target.style.position = "relative";
+    target.style.marginTop = "30px"; // Üst etikete yer açmak için
+    
+    // Adım numarası
+    const stepNumber = document.createElement("div");
+    stepNumber.innerText = `Adım ${i + 1}`;
+    stepNumber.style.position = "absolute";
+    stepNumber.style.top = "-30px"; // Daha yukarıda
+    stepNumber.style.left = "0";
+    stepNumber.style.right = "0";
+    stepNumber.style.textAlign = "center";
+    stepNumber.style.fontSize = "14px";
+    stepNumber.style.fontWeight = "bold";
+    stepNumber.style.color = "#333";
+    stepNumber.style.width = "100%"; // Tam genişlik
+    stepNumber.style.marginBottom = "5px"; // Alt boşluk
+    
+    target.appendChild(stepNumber);
+    targetsContainer.appendChild(target);
   }
-  puzzleArea.appendChild(dropZone);
 
   // İpucu butonu ekle
-  let hintButton = document.createElement("button");
+  const hintButton = document.createElement("button");
   hintButton.innerText = "İpucu Göster";
-  hintButton.style.marginTop = "30px";
+  hintButton.style.marginTop = "20px";
   hintButton.style.padding = "10px 20px";
   hintButton.style.backgroundColor = "#ff9800";
   hintButton.style.color = "white";
@@ -928,35 +1302,29 @@ function setupPlanet1Puzzle4() {
   hintButton.style.fontWeight = "bold";
   
   hintButton.addEventListener("click", () => {
-    // İpucu gösterme fonksiyonu
-    let hintText = "Doğru sıra: 1) Meyveleri Yıka, 2) Meyveleri Kes, 3) Tabağa Koy, 4) Sos Ekle";
+    const hintText = "Doğru sıra: 1) Meyveleri Yıka, 2) Meyveleri Kes, 3) Tabağa Koy, 4) Sos Ekle";
     
-    // İpucu ekranın ortasında gösterilsin
-    let hintDiv = document.getElementById("recipeHintDisplay");
+    const hintDiv = document.getElementById("recipeHintDisplay");
     if (hintDiv) {
       hintDiv.style.display = "block";
       hintDiv.innerText = hintText;
       
-      // İpucu 5 saniye sonra kaybolsun
       setTimeout(() => {
         hintDiv.style.display = "none";
       }, 5000);
     } else {
-      // Yedek olarak normal mesaj gösterme yöntemi
       showMessage(hintText, "success");
       setTimeout(clearMessage, 4000);
     }
   });
   
-  puzzleArea.appendChild(hintButton);
-
-  function checkRecipeOrder() {
-    // Tüm slot'lar doldurulmuş mu kontrol et
-    let slots = dropZone.querySelectorAll(".dropzone");
+  // Kontrol fonksiyonu
+  function checkAllTargets() {
+    const targets = targetsContainer.querySelectorAll('.recipe-target');
     let filledCount = 0;
     
-    slots.forEach(s => {
-      if (s.dataset.filled === "true") {
+    targets.forEach(target => {
+      if (target.dataset.filled === "true") {
         filledCount++;
       }
     });
@@ -966,6 +1334,12 @@ function setupPlanet1Puzzle4() {
       setTimeout(goNextPuzzle, 2000);
     }
   }
+  
+  // Her şeyi ana alana ekle
+  gameContainer.appendChild(cardsContainer);
+  gameContainer.appendChild(targetsContainer);
+  gameContainer.appendChild(hintButton);
+  puzzleArea.appendChild(gameContainer);
 }
 
 function setupPlanet1Puzzle5() {
@@ -1279,6 +1653,7 @@ function setupPlanet2Puzzle1() {
   container.style.gap = "40px";
   container.style.margin = "0 auto";
   container.style.maxWidth = "800px";
+  container.style.flexWrap = "wrap"; // Ekran küçüldüğünde alt alta geçmesi için
 
   // Sol taraf - sürüklenecek öğeler
   let leftDiv = document.createElement("div");
@@ -1290,67 +1665,9 @@ function setupPlanet2Puzzle1() {
   leftDiv.style.backgroundColor = "rgba(240, 240, 240, 0.5)";
   leftDiv.style.borderRadius = "10px";
   leftDiv.style.border = "2px dashed #ccc";
-  leftDiv.style.minWidth = "350px";
-
-  // Öğeleri oluştur
-  items.forEach(item => {
-    let itemContainer = document.createElement("div");
-    itemContainer.classList.add("item-container");
-    itemContainer.dataset.id = item.id;
-    itemContainer.dataset.type = item.type;
-    itemContainer.style.display = "flex";
-    itemContainer.style.flexDirection = "column";
-    itemContainer.style.alignItems = "center";
-    itemContainer.style.gap = "5px";
-    itemContainer.style.transition = "all 0.3s ease";
-
-    let draggable = document.createElement("div");
-    draggable.classList.add("draggable");
-    draggable.dataset.id = item.id;
-    draggable.dataset.type = item.type;
-    draggable.style.width = "100px";
-    draggable.style.height = "100px";
-    draggable.style.backgroundImage = `url("images/${item.img}")`;
-    draggable.style.backgroundSize = "cover";
-    draggable.style.backgroundPosition = "center";
-    draggable.style.borderRadius = "10px";
-    draggable.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
-    draggable.style.cursor = "grab";
-    draggable.style.transition = "transform 0.2s, box-shadow 0.2s";
-    draggable.draggable = true;
-
-    // İsim etiketi
-    let label = document.createElement("div");
-    label.innerText = item.name;
-    label.style.fontSize = "0.9em";
-    label.style.fontWeight = "bold";
-    label.style.color = "#333";
-
-    // Sürükleme efektleri
-    draggable.addEventListener("mouseover", () => {
-      draggable.style.transform = "scale(1.05)";
-      draggable.style.boxShadow = "0 5px 10px rgba(0,0,0,0.3)";
-    });
-
-    draggable.addEventListener("mouseout", () => {
-      draggable.style.transform = "scale(1)";
-      draggable.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
-    });
-
-    draggable.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("text/plain", item.type);
-      e.dataTransfer.setData("application/json", JSON.stringify(item));
-      draggable.style.opacity = "0.6";
-    });
-
-    draggable.addEventListener("dragend", (e) => {
-      draggable.style.opacity = "1";
-    });
-
-    itemContainer.appendChild(draggable);
-    itemContainer.appendChild(label);
-    leftDiv.appendChild(itemContainer);
-  });
+  leftDiv.style.minWidth = "280px";
+  leftDiv.style.maxWidth = "400px";
+  leftDiv.style.margin = "10px";
 
   // Sağ taraf - meyve kutusu
   let rightDiv = document.createElement("div");
@@ -1358,6 +1675,7 @@ function setupPlanet2Puzzle1() {
   rightDiv.style.flexDirection = "column";
   rightDiv.style.alignItems = "center";
   rightDiv.style.gap = "10px";
+  rightDiv.style.margin = "10px";
 
   // Meyve kutusu
   let fruitBox = document.createElement("div");
@@ -1392,7 +1710,213 @@ function setupPlanet2Puzzle1() {
   fruitItems.style.width = "100%";
   fruitBox.appendChild(fruitItems);
 
-  // Kutu sürükleme efektleri
+  rightDiv.appendChild(fruitBox);
+
+  // İpucu butonu
+  let hintButton = document.createElement("button");
+  hintButton.innerText = "İpucu Göster";
+  hintButton.style.marginTop = "15px";
+  hintButton.style.padding = "8px 15px";
+  hintButton.style.backgroundColor = "#ff9800";
+  hintButton.style.color = "white";
+  hintButton.style.border = "none";
+  hintButton.style.borderRadius = "5px";
+  hintButton.style.cursor = "pointer";
+  hintButton.style.fontWeight = "bold";
+  
+  hintButton.addEventListener("click", () => {
+    showMessage("İpucu: Elma, muz ve portakal birer meyvedir.", "success");
+    setTimeout(clearMessage, 3000);
+  });
+  
+  rightDiv.appendChild(hintButton);
+
+  // Öğeleri oluştur
+  items.forEach(item => {
+    let itemContainer = document.createElement("div");
+    itemContainer.classList.add("item-container");
+    itemContainer.dataset.id = item.id;
+    itemContainer.dataset.type = item.type;
+    itemContainer.style.display = "flex";
+    itemContainer.style.flexDirection = "column";
+    itemContainer.style.alignItems = "center";
+    itemContainer.style.gap = "5px";
+    itemContainer.style.transition = "all 0.3s ease";
+    itemContainer.style.position = "relative"; // Dokunmatik sürükleme için gerekli
+
+    let draggable = document.createElement("div");
+    draggable.classList.add("draggable");
+    draggable.dataset.id = item.id;
+    draggable.dataset.type = item.type;
+    draggable.dataset.name = item.name;
+    draggable.dataset.img = item.img;
+    draggable.style.width = "100px";
+    draggable.style.height = "100px";
+    draggable.style.backgroundImage = `url("images/${item.img}")`;
+    draggable.style.backgroundSize = "cover";
+    draggable.style.backgroundPosition = "center";
+    draggable.style.borderRadius = "10px";
+    draggable.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
+    draggable.style.cursor = "grab";
+    draggable.style.transition = "transform 0.2s, box-shadow 0.2s";
+    draggable.style.touchAction = "none"; // Dokunmatik için gerekli
+
+    // İsim etiketi
+    let label = document.createElement("div");
+    label.innerText = item.name;
+    label.style.fontSize = "0.9em";
+    label.style.fontWeight = "bold";
+    label.style.color = "#333";
+    label.style.textAlign = "center";
+    label.style.width = "100%";
+    label.style.pointerEvents = "none"; // Dokunma olaylarını engelle
+
+    // Standart sürükleme olayları
+    draggable.setAttribute("draggable", "true");
+
+    draggable.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", item.type);
+      e.dataTransfer.setData("application/json", JSON.stringify(item));
+      draggable.style.opacity = "0.6";
+    });
+
+    draggable.addEventListener("dragend", () => {
+      draggable.style.opacity = "1";
+    });
+
+    // Dokunmatik ekran için sürükleme işlemi
+    let isDragging = false;
+    let startX, startY;
+    let clone = null;
+    
+    function startDrag(clientX, clientY) {
+      isDragging = true;
+      startX = clientX;
+      startY = clientY;
+      
+      // Orijinal elemanı seçili göster
+      draggable.style.opacity = "0.6";
+      
+      // Klon oluştur
+      clone = draggable.cloneNode(true);
+      clone.style.position = "fixed";
+      clone.style.zIndex = "1000";
+      clone.style.pointerEvents = "none";
+      clone.style.opacity = "0.8";
+      clone.style.width = draggable.offsetWidth + "px";
+      clone.style.height = draggable.offsetHeight + "px";
+      
+      // Klonu konumlandır
+      updatePosition(clientX, clientY);
+      document.body.appendChild(clone);
+    }
+    
+    function updatePosition(clientX, clientY) {
+      if (!isDragging || !clone) return;
+      
+      // Klonu parmak/fare pozisyonuna göre taşı
+      let offsetX = draggable.offsetWidth / 2;
+      let offsetY = draggable.offsetHeight / 2;
+      clone.style.left = (clientX - offsetX) + "px";
+      clone.style.top = (clientY - offsetY) + "px";
+    }
+    
+    function endDrag(clientX, clientY) {
+      if (!isDragging) return;
+      isDragging = false;
+      
+      // Orijinal elemanı normal göster
+      draggable.style.opacity = "1";
+      
+      // Eğer klon bırakma alanı üzerindeyse
+      if (clone && isColliding(clone, fruitBox)) {
+        processItemDrop(item);
+      }
+      
+      // Klonu temizle
+      if (clone) {
+        document.body.removeChild(clone);
+        clone = null;
+      }
+    }
+    
+    // Çarpışma tespiti
+    function isColliding(element1, element2) {
+      const rect1 = element1.getBoundingClientRect();
+      const rect2 = element2.getBoundingClientRect();
+      
+      return !(
+        rect1.right < rect2.left || 
+        rect1.left > rect2.right || 
+        rect1.bottom < rect2.top || 
+        rect1.top > rect2.bottom
+      );
+    }
+    
+    // Fare olayları
+    draggable.addEventListener("mousedown", (e) => {
+      startDrag(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        updatePosition(e.clientX, e.clientY);
+      }
+    });
+    
+    document.addEventListener("mouseup", (e) => {
+      if (isDragging) {
+        endDrag(e.clientX, e.clientY);
+      }
+    });
+    
+    // Dokunmatik olaylar
+    draggable.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      startDrag(touch.clientX, touch.clientY);
+      e.preventDefault(); // Sayfanın kaydırılmasını engelle
+    });
+    
+    document.addEventListener("touchmove", (e) => {
+      if (isDragging) {
+        const touch = e.touches[0];
+        updatePosition(touch.clientX, touch.clientY);
+        e.preventDefault();
+      }
+    });
+    
+    document.addEventListener("touchend", (e) => {
+      if (isDragging) {
+        if (e.changedTouches.length > 0) {
+          const touch = e.changedTouches[0];
+          endDrag(touch.clientX, touch.clientY);
+        } else {
+          endDrag(0, 0); // Pozisyon bilgisi yoksa
+        }
+      }
+    });
+
+    // Sürükleme efektleri
+    draggable.addEventListener("mouseover", () => {
+      if (!isDragging) {
+        draggable.style.transform = "scale(1.05)";
+        draggable.style.boxShadow = "0 5px 10px rgba(0,0,0,0.3)";
+      }
+    });
+
+    draggable.addEventListener("mouseout", () => {
+      if (!isDragging) {
+        draggable.style.transform = "scale(1)";
+        draggable.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
+      }
+    });
+
+    itemContainer.appendChild(draggable);
+    itemContainer.appendChild(label);
+    leftDiv.appendChild(itemContainer);
+  });
+
+  // Standart Drag-Drop olayları için fruitBox
   fruitBox.addEventListener("dragover", (e) => {
     e.preventDefault();
     fruitBox.style.backgroundColor = "#fff8e1";
@@ -1400,7 +1924,7 @@ function setupPlanet2Puzzle1() {
     fruitBox.style.transform = "scale(1.03)";
   });
 
-  fruitBox.addEventListener("dragleave", (e) => {
+  fruitBox.addEventListener("dragleave", () => {
     fruitBox.style.backgroundColor = "#f8f8f8";
     fruitBox.style.borderColor = "#ff9800";
     fruitBox.style.transform = "scale(1)";
@@ -1415,7 +1939,12 @@ function setupPlanet2Puzzle1() {
     let itemType = e.dataTransfer.getData("text/plain");
     let itemData = JSON.parse(e.dataTransfer.getData("application/json"));
 
-    if (itemType === "fruit") {
+    processItemDrop(itemData);
+  });
+
+  // Öğe bırakma işlemi
+  function processItemDrop(itemData) {
+    if (itemData.type === "fruit") {
       playCorrectSound();
       
       // Meyve kutusu içine yerleştir
@@ -1474,28 +2003,7 @@ function setupPlanet2Puzzle1() {
       showMessage(`"${itemData.name}" bir meyve değil!`, "error");
       setTimeout(clearMessage, 1500);
     }
-  });
-
-  rightDiv.appendChild(fruitBox);
-
-  // İpucu
-  let hintButton = document.createElement("button");
-  hintButton.innerText = "İpucu Göster";
-  hintButton.style.marginTop = "15px";
-  hintButton.style.padding = "8px 15px";
-  hintButton.style.backgroundColor = "#ff9800";
-  hintButton.style.color = "white";
-  hintButton.style.border = "none";
-  hintButton.style.borderRadius = "5px";
-  hintButton.style.cursor = "pointer";
-  hintButton.style.fontWeight = "bold";
-  
-  hintButton.addEventListener("click", () => {
-    showMessage("İpucu: Elma, muz ve portakal birer meyvedir.", "success");
-    setTimeout(clearMessage, 3000);
-  });
-  
-  rightDiv.appendChild(hintButton);
+  }
 
   container.appendChild(leftDiv);
   container.appendChild(rightDiv);
@@ -3152,6 +3660,19 @@ function setupPlanet3Puzzle1() {
   galleryTitle.style.color = "#333";
   gallerySection.appendChild(galleryTitle);
 
+  // Sürükleme değişkenleri
+  let draggingItem = null;
+  let dragOffsetX = 0;
+  let dragOffsetY = 0;
+  let dragClone = null;
+  let currentDropzone = null;
+  
+  // Genel sürükleme olayları
+  document.addEventListener('mousemove', handleDragMove);
+  document.addEventListener('touchmove', handleDragMove, { passive: false });
+  document.addEventListener('mouseup', handleDragEnd);
+  document.addEventListener('touchend', handleDragEnd);
+
   // Hayvan görselleri
   items.forEach(item => {
     let imgContainer = document.createElement("div");
@@ -3165,7 +3686,6 @@ function setupPlanet3Puzzle1() {
     
     let img = document.createElement("div");
     img.classList.add("draggable");
-    img.draggable = true;
     img.dataset.type = item.type;
     img.dataset.index = items.indexOf(item);
     img.style.width = "100%";
@@ -3177,32 +3697,31 @@ function setupPlanet3Puzzle1() {
     img.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
     img.style.cursor = "grab";
     img.style.transition = "transform 0.2s ease, box-shadow 0.2s ease";
+    img.style.touchAction = "none"; // Dokunmatik gezinmeyi engellemek için
 
     // Hover efektleri
     img.addEventListener("mouseover", () => {
+      if (!draggingItem) {
       img.style.transform = "scale(1.05)";
       img.style.boxShadow = "0 5px 10px rgba(0,0,0,0.3)";
+      }
     });
 
     img.addEventListener("mouseout", () => {
+      if (!draggingItem) {
       img.style.transform = "scale(1)";
       img.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
+      }
     });
 
-    // Sürükleme olayları
-    img.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("text/plain", item.type);
-      e.dataTransfer.setData("application/json", JSON.stringify({
-        type: item.type,
-        index: items.indexOf(item),
-        label: item.label
-      }));
-      img.style.opacity = "0.6";
+    // Sürükleme başlatma
+    img.addEventListener('mousedown', function(e) {
+      startDrag(e, item, img, imgContainer);
     });
-
-    img.addEventListener("dragend", () => {
-      img.style.opacity = "1";
-    });
+    
+    img.addEventListener('touchstart', function(e) {
+      startDrag(e, item, img, imgContainer);
+    }, { passive: false });
 
     imgContainer.appendChild(img);
     
@@ -3298,36 +3817,147 @@ function setupPlanet3Puzzle1() {
   boxesSection.appendChild(catBox);
   boxesSection.appendChild(dogBox);
 
+  // Dropzone'ları bir diziye ekleyelim
+  const dropzones = [catBox, dogBox];
+
   // Toplam sınıflandırılmış görsel sayısı
   let classifiedCount = 0;
 
-  // Kutuların sürükleme olayları
-  [catBox, dogBox].forEach(box => {
-    box.addEventListener("dragover", (e) => {
+  // Sürükleme işlemini başlatma fonksiyonu
+  function startDrag(e, item, imgElement, imgContainer) {
       e.preventDefault();
-      box.style.backgroundColor = box === catBox ? 
-        "rgba(233, 30, 99, 0.2)" : "rgba(33, 150, 243, 0.2)";
-      box.style.transform = "scale(1.03)";
-    });
+    
+    // Eğer bir sürükleme zaten aktifse, işlemi iptal et
+    if (draggingItem) return;
+    
+    // Mouse veya dokunmatik konum bilgisini al
+    let clientX, clientY;
+    if (e.type === 'touchstart') {
+      const touch = e.touches[0];
+      clientX = touch.clientX;
+      clientY = touch.clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    
+    // Sürüklenen öğenin detaylarını kaydet
+    const rect = imgElement.getBoundingClientRect();
+    dragOffsetX = clientX - rect.left;
+    dragOffsetY = clientY - rect.top;
+    
+    draggingItem = {
+      element: imgElement,
+      container: imgContainer,
+      data: {
+        type: item.type,
+        index: items.indexOf(item),
+        label: item.label
+      }
+    };
+    
+    // Klon oluştur (sürükleme göstergesi)
+    dragClone = imgElement.cloneNode(true);
+    dragClone.id = "dragClone";
+    dragClone.style.position = "fixed";
+    dragClone.style.left = rect.left + "px";
+    dragClone.style.top = rect.top + "px";
+    dragClone.style.width = rect.width + "px";
+    dragClone.style.height = rect.height + "px";
+    dragClone.style.opacity = "0.8";
+    dragClone.style.zIndex = "1000";
+    dragClone.style.pointerEvents = "none";
+    document.body.appendChild(dragClone);
+    
+    // Orijinal öğeyi yarı saydam yap
+    imgElement.style.opacity = "0.4";
+  }
 
-    box.addEventListener("dragleave", () => {
-      box.style.backgroundColor = box === catBox ? 
-        "rgba(233, 30, 99, 0.1)" : "rgba(33, 150, 243, 0.1)";
-      box.style.transform = "scale(1)";
-    });
-
-    box.addEventListener("drop", (e) => {
+  // Sürükleme hareketi fonksiyonu
+  function handleDragMove(e) {
+    if (!draggingItem || !dragClone) return;
+    
       e.preventDefault();
-      box.style.backgroundColor = box === catBox ? 
+    
+    // Mouse veya dokunmatik konum bilgisini al
+    let clientX, clientY;
+    if (e.type === 'touchmove') {
+      const touch = e.touches[0];
+      clientX = touch.clientX;
+      clientY = touch.clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    
+    // Klonu hareket ettir
+    dragClone.style.left = (clientX - dragOffsetX) + "px";
+    dragClone.style.top = (clientY - dragOffsetY) + "px";
+    
+    // Hangi dropzone üzerinde olduğunu kontrol et
+    let newDropzone = null;
+    for (const zone of dropzones) {
+      const rect = zone.getBoundingClientRect();
+      if (clientX >= rect.left && clientX <= rect.right && 
+          clientY >= rect.top && clientY <= rect.bottom) {
+        newDropzone = zone;
+        break;
+      }
+    }
+    
+    // Dropzone değiştiyse, görsel geri bildirim güncelle
+    if (newDropzone !== currentDropzone) {
+      // Önceki dropzone'u normal haline getir
+      if (currentDropzone) {
+        currentDropzone.style.backgroundColor = currentDropzone.dataset.type === "cat" ? 
         "rgba(233, 30, 99, 0.1)" : "rgba(33, 150, 243, 0.1)";
-      box.style.transform = "scale(1)";
+        currentDropzone.style.transform = "scale(1)";
+      }
+      
+      // Yeni dropzone'u vurgula
+      if (newDropzone) {
+        newDropzone.style.backgroundColor = newDropzone.dataset.type === "cat" ? 
+          "rgba(233, 30, 99, 0.2)" : "rgba(33, 150, 243, 0.2)";
+        newDropzone.style.transform = "scale(1.03)";
+      }
+      
+      currentDropzone = newDropzone;
+    }
+  }
 
-      try {
-        const animalType = e.dataTransfer.getData("text/plain");
-        const animalData = JSON.parse(e.dataTransfer.getData("application/json"));
-        
+  // Sürükleme bitişi fonksiyonu
+  function handleDragEnd(e) {
+    if (!draggingItem) return;
+    
+    // Klonu temizle
+    if (dragClone) {
+      dragClone.remove();
+      dragClone = null;
+    }
+    
+    // Eğer bir dropzone üzerinde bırakıldıysa
+    if (currentDropzone) {
+      // Öğeyi bırakma işlemini gerçekleştir
+      handleDrop(currentDropzone, draggingItem.data);
+      
+      // Dropzone'u normal haline getir
+      currentDropzone.style.backgroundColor = currentDropzone.dataset.type === "cat" ? 
+        "rgba(233, 30, 99, 0.1)" : "rgba(33, 150, 243, 0.1)";
+      currentDropzone.style.transform = "scale(1)";
+    } else {
+      // Başarısız bırakma, öğeyi normal haline getir
+      draggingItem.element.style.opacity = "1";
+    }
+    
+    // Temizle
+    draggingItem = null;
+    currentDropzone = null;
+  }
+
+  // Bırakma işlemini ele alan fonksiyon
+  function handleDrop(dropzone, animalData) {
         // Doğru kutuya bırakıldı mı kontrolü
-        if (box.dataset.type === animalType) {
+    if (dropzone.dataset.type === animalData.type) {
           playCorrectSound();
           
           // Animasyonlu sınıflandırma göstergesi
@@ -3338,7 +3968,7 @@ function setupPlanet3Puzzle1() {
           classifiedItem.style.gap = "5px";
           classifiedItem.style.width = "90%";
           classifiedItem.style.padding = "4px"; // Padding azalttım
-          classifiedItem.style.backgroundColor = box === catBox ? "#E91E63" : "#2196F3";
+      classifiedItem.style.backgroundColor = dropzone === catBox ? "#E91E63" : "#2196F3";
           classifiedItem.style.color = "white";
           classifiedItem.style.borderRadius = "5px";
           classifiedItem.style.fontSize = "0.8em"; // Font boyutunu küçülttüm
@@ -3347,7 +3977,7 @@ function setupPlanet3Puzzle1() {
           classifiedItem.style.marginBottom = "3px"; // Marjı azalttım
           
           // Emoji + etiket
-          const emoji = box === catBox ? "😺" : "🐶";
+      const emoji = dropzone === catBox ? "😺" : "🐶";
           classifiedItem.innerText = `${emoji} ${animalData.label}`;
           
           // Doğru işareti
@@ -3356,7 +3986,7 @@ function setupPlanet3Puzzle1() {
           checkmark.style.marginLeft = "auto";
           classifiedItem.appendChild(checkmark);
           
-          box.appendChild(classifiedItem);
+      dropzone.appendChild(classifiedItem);
           
           // Orijinal görseli gizle - kaybolma animasyonu ekle
           const draggedImageContainer = document.querySelector(`.animal-image-container[data-index="${animalData.index}"]`);
@@ -3408,7 +4038,7 @@ function setupPlanet3Puzzle1() {
               setTimeout(goNextPuzzle, 3000);
             }, 1000);
           } else {
-            showMessage(`Doğru! Bu bir ${box === catBox ? "kedi" : "köpek"}. ${items.length - classifiedCount} görsel kaldı.`, "success");
+        showMessage(`Doğru! Bu bir ${dropzone === catBox ? "kedi" : "köpek"}. ${items.length - classifiedCount} görsel kaldı.`, "success");
             setTimeout(clearMessage, 2000);
           }
         } else {
@@ -3416,19 +4046,24 @@ function setupPlanet3Puzzle1() {
           playWrongSound();
           
           // Kutuyu salla
-          box.style.animation = "shake 0.5s";
+      dropzone.style.animation = "shake 0.5s";
           setTimeout(() => {
-            box.style.animation = "";
+        dropzone.style.animation = "";
           }, 500);
           
-          showMessage(`Hata! Bu bir ${animalType === "cat" ? "kedi" : "köpek"}, ${box.dataset.type === "cat" ? "kedi" : "köpek"} kutusuna bırakmalısın.`, "error");
+      showMessage(`Hata! Bu bir ${animalData.type === "cat" ? "kedi" : "köpek"}, ${dropzone.dataset.type === "cat" ? "kedi" : "köpek"} kutusuna bırakmalısın.`, "error");
           setTimeout(clearMessage, 2000);
+      
+      // Sürüklenen öğeyi normale döndür
+      const draggedImageContainer = document.querySelector(`.animal-image-container[data-index="${animalData.index}"]`);
+      if (draggedImageContainer) {
+        const draggedItem = draggedImageContainer.querySelector('.draggable');
+        if (draggedItem) {
+          draggedItem.style.opacity = "1";
         }
-      } catch (error) {
-        console.error("Hayvan verisi işlenirken hata oluştu:", error);
       }
-    });
-  });
+    }
+  }
 
   gameContainer.appendChild(gallerySection);
   gameContainer.appendChild(boxesSection);
@@ -3825,6 +4460,7 @@ function setupPlanet3Puzzle2() {
     let completionText = document.createElement("p");
     completionText.innerText = "Yapay zeka görüntü tanıma sistemleri hakkında bilgilerinizi pekiştirdiniz. Bu teknoloji günümüzde telefonlardan güvenlik sistemlerine, sağlıktan eğitime kadar birçok alanda kullanılıyor!";
     completionText.style.margin = "0 0 15px 0";
+completionText.style.color = "#2E7D32"; // Yeşil renk ekledim
     completionBox.appendChild(completionText);
     
     // Continue button
@@ -4306,6 +4942,7 @@ function setupPlanet3Puzzle3() {
     completionText.innerText = "Artık makine öğrenmesinin temel türlerini ve nasıl çalıştığını biliyorsun!";
     completionText.style.margin = "0 0 10px 0"; // Daha az margin
     completionText.style.fontSize = "0.9em"; // Daha küçük font
+completionText.style.color = "#4A148C"; // Başlık ile aynı renk
     completionBox.appendChild(completionText);
     
     // Continue button
@@ -5028,7 +5665,7 @@ function setupPlanet3Puzzle5() {
   leaf2.style.transformOrigin = "left bottom";
   leaf2.style.zIndex = "1";
   leaf2.style.transition = "all 1s ease-in-out";
-  plantSide.appendChild(leaf2);
+  plantSide.appendChild(leaf2); // Düzeltildi: plantGameBox yerine plantSide'a ekleniyor
 
   // Su damlası emojisi gösterimi
   let waterLabel = document.createElement("div");
@@ -5158,7 +5795,7 @@ function setupPlanet3Puzzle5() {
         optionButton.style.color = "white";
         optionButton.style.opacity = "1";
         
-        // Doğru açıklama
+        // Doğru açıklama - Tebrikler mesajı ile aynı renk yapıldı
         let feedback = document.createElement("div");
         feedback.style.backgroundColor = "#E8F5E9";
         feedback.style.padding = "10px 15px";
@@ -5166,7 +5803,7 @@ function setupPlanet3Puzzle5() {
         feedback.style.marginTop = "10px";
         feedback.style.border = "2px solid #A5D6A7";
         
-        feedback.innerHTML = "<span style='font-weight:bold; color:#388E3C'>✅ Harika! Doğru tahmin!</span><br>Her 1 damla su bitkinin 10 cm büyümesini sağlar. 7 damla = 70 cm!";
+        feedback.innerHTML = "<span style='font-weight:bold; color:#388E3C'>✅ Harika! Doğru tahmin!</span><br><span style='color:#388E3C'>Her 1 damla su bitkinin 10 cm büyümesini sağlar. 7 damla = 70 cm!</span>";
         predictionBox.appendChild(feedback);
         
         // Konfeti ekle
@@ -5672,6 +6309,7 @@ function setupPlanet4Puzzle1() {
     let successText = document.createElement("p");
     successText.innerText = "Tüm cümleleri doğru bir şekilde tamamladın! Artık Doğal Dil İşleme'yi daha iyi anlıyorsun!";
     successText.style.margin = "0";
+    successText.style.color = "#1976D2"; // Başlık ile aynı renk olması için eklendi
     successMessage.appendChild(successText);
     
     document.body.appendChild(successMessage);
@@ -6156,6 +6794,7 @@ function setupPlanet4Puzzle2() {
     let successText = document.createElement("p");
     successText.innerText = "Hem eş anlamlı hem de zıt anlamlı kelimeleri başarıyla eşleştirdin!";
     successText.style.margin = "0";
+successText.style.color = "#7B1FA2"; // Başlık ile aynı renk eklendi
     successMessage.appendChild(successText);
     
     document.body.appendChild(successMessage);
@@ -6192,14 +6831,14 @@ function setupPlanet4Puzzle3() {
   mainContainer.style.display = "flex";
   mainContainer.style.flexDirection = "column";
   mainContainer.style.alignItems = "center";
-  mainContainer.style.gap = "15px";
+  mainContainer.style.gap = "8px"; // Azaltılmış boşluk
   puzzleArea.appendChild(mainContainer);
 
-  // Bilgilendirme kutusu
+  // Bilgilendirme kutusu - daha kompakt
   let infoBox = document.createElement("div");
   infoBox.style.backgroundColor = "rgba(255, 193, 7, 0.1)"; // Sarı tema
   infoBox.style.borderRadius = "12px";
-  infoBox.style.padding = "15px";
+  infoBox.style.padding = "10px"; // Azaltılmış padding
   infoBox.style.border = "2px solid rgba(255, 193, 7, 0.3)";
   infoBox.style.width = "90%";
   infoBox.style.maxWidth = "700px";
@@ -6209,7 +6848,7 @@ function setupPlanet4Puzzle3() {
   // Bilgilendirme başlığı
   let infoTitle = document.createElement("h3");
   infoTitle.innerHTML = "😀 Duygu Dedektifi 😢";
-  infoTitle.style.margin = "0 0 10px 0";
+  infoTitle.style.margin = "0 0 8px 0";
   infoTitle.style.color = "#FF8F00";
   infoTitle.style.fontSize = "1.2em";
   infoBox.appendChild(infoTitle);
@@ -6217,7 +6856,7 @@ function setupPlanet4Puzzle3() {
   // Bilgilendirme metni
   let infoText = document.createElement("p");
   infoText.innerHTML = "Yapay zeka, yazılı metinlerdeki <strong>duyguları</strong> anlayabilir! Buna <strong>duygu analizi</strong> denir. Sosyal medya yorumları, müşteri geri bildirimleri ve mesajların duygusunu otomatik olarak anlamak için kullanılır. Mesela 'Çok mutluyum!' cümlesinden bir insanın mutlu olduğunu anlayabilir. Haydi şimdi sen de bir duygu dedektifi ol ve cümlelerdeki duyguları bul!";
-  infoText.style.margin = "0 0 10px 0";
+  infoText.style.margin = "0 0 5px 0";
   infoText.style.fontSize = "1em";
   infoText.style.lineHeight = "1.4";
   infoBox.appendChild(infoText);
@@ -6230,7 +6869,7 @@ function setupPlanet4Puzzle3() {
   progressContainer.style.backgroundColor = "rgba(255, 193, 7, 0.2)";
   progressContainer.style.borderRadius = "6px";
   progressContainer.style.overflow = "hidden";
-  progressContainer.style.margin = "10px 0";
+  progressContainer.style.margin = "5px 0"; // Azaltılmış margin
   mainContainer.appendChild(progressContainer);
 
   // İlerleme çubuğu
@@ -6247,12 +6886,12 @@ function setupPlanet4Puzzle3() {
   progressText.id = "progress-text";
   progressText.innerText = "Soru: 1/5";
   progressText.style.textAlign = "center";
-  progressText.style.margin = "5px 0 15px 0";
+  progressText.style.margin = "2px 0 8px 0"; // Azaltılmış margin
   progressText.style.fontWeight = "bold";
   progressText.style.color = "#FF8F00";
   mainContainer.appendChild(progressText);
 
-  // Duygu dedektifi kartı
+  // Duygu dedektifi kartı - yukarı taşındı
   let emotionCard = document.createElement("div");
   emotionCard.style.width = "90%";
   emotionCard.style.maxWidth = "700px";
@@ -6263,9 +6902,10 @@ function setupPlanet4Puzzle3() {
   emotionCard.style.display = "flex";
   emotionCard.style.flexDirection = "column";
   emotionCard.style.alignItems = "center";
-  emotionCard.style.gap = "20px";
+  emotionCard.style.gap = "15px";
   emotionCard.style.position = "relative";
   emotionCard.style.overflow = "hidden";
+  emotionCard.style.marginTop = "-10px"; // Negatif margin ile yukarı taşıma
   mainContainer.appendChild(emotionCard);
 
   // Kart üst kısmı
@@ -6357,7 +6997,10 @@ function setupPlanet4Puzzle3() {
     }
   ];
 
-  // Duygu seçenekleri
+  // Soruları karıştır
+  const shuffledQuestions = shuffleArray([...emotionQuestions]);
+
+  // Duygu seçenekleri - sırası sabit kalacak
   const emotions = [
     { text: "Mutlu", emoji: "😀", value: "mutlu" },
     { text: "Üzgün", emoji: "😢", value: "üzgün" },
@@ -6426,7 +7069,7 @@ function setupPlanet4Puzzle3() {
         });
         
         // Doğru cevabı kontrol et
-        const currentQuestion = emotionQuestions[currentQuestionIndex];
+        const currentQuestion = shuffledQuestions[currentQuestionIndex];
         const isCorrect = emotion.value === currentQuestion.emotion;
         
         if (isCorrect) {
@@ -6517,11 +7160,11 @@ function setupPlanet4Puzzle3() {
     document.getElementById("progress-text").innerText = `Soru: ${currentQuestionIndex + 1}/5`;
     
     // Cümleyi yükle
-    const currentQuestion = emotionQuestions[currentQuestionIndex];
+    const currentQuestion = shuffledQuestions[currentQuestionIndex];
     document.getElementById("sentence-text").innerText = `"${currentQuestion.sentence}"`;
     
-    // Duygu karakter emojisini güncelle (biraz daha eğlenceli olması için)
-    characterImg.innerHTML = `${currentQuestion.emoji}`;
+    // Dedektif emojisi sabit kalsın
+    characterImg.innerHTML = "🕵️";
     
     // Duygu seçeneklerini oluştur
     createEmotionOptions();
@@ -6531,7 +7174,7 @@ function setupPlanet4Puzzle3() {
   function goToNextQuestion() {
     currentQuestionIndex++;
     
-    if (currentQuestionIndex < emotionQuestions.length) {
+    if (currentQuestionIndex < shuffledQuestions.length) {
       // Sonraki soruyu yükle
       loadQuestion();
     } else {
@@ -6566,6 +7209,7 @@ function setupPlanet4Puzzle3() {
     resultText.innerHTML = `5 sorudan <strong>${correctAnswers}</strong> tanesini doğru cevapladın!`;
     resultText.style.textAlign = "center";
     resultText.style.margin = "10px 0";
+    resultText.style.color = "#FF8F00"; // Başlık ile aynı renk
     emotionCard.appendChild(resultText);
     
     // Açıklama
@@ -6576,6 +7220,7 @@ function setupPlanet4Puzzle3() {
     explanation.style.textAlign = "center";
     explanation.style.fontSize = "0.9em";
     explanation.style.margin = "10px 0 20px 0";
+    explanation.style.color = "#FF8F00"; // Başlık ile aynı renk
     emotionCard.appendChild(explanation);
     
     // İlerleme butonu
@@ -6712,7 +7357,7 @@ function setupPlanet4Puzzle3() {
 function setupPlanet4Puzzle4() {
   puzzleHintText.innerText = "IPUCU: Hikayeyi en mantıklı şekilde tamamla!";
 
-  // Ana konteyner
+  // Ana konteyner - gap azaltıldı
   let mainContainer = document.createElement("div");
   mainContainer.style.width = "100%";
   mainContainer.style.maxWidth = "800px";
@@ -6720,37 +7365,37 @@ function setupPlanet4Puzzle4() {
   mainContainer.style.display = "flex";
   mainContainer.style.flexDirection = "column";
   mainContainer.style.alignItems = "center";
-  mainContainer.style.gap = "15px";
+  mainContainer.style.gap = "8px"; // 15px'ten azaltıldı
   puzzleArea.appendChild(mainContainer);
 
-  // Bilgilendirme kutusu
+  // Bilgilendirme kutusu - padding azaltıldı
   let infoBox = document.createElement("div");
   infoBox.style.backgroundColor = "rgba(75, 192, 192, 0.1)"; // Turkuaz tema
   infoBox.style.borderRadius = "12px";
-  infoBox.style.padding = "15px";
+  infoBox.style.padding = "10px"; // 15px'ten azaltıldı
   infoBox.style.border = "2px solid rgba(75, 192, 192, 0.3)";
   infoBox.style.width = "90%";
   infoBox.style.maxWidth = "700px";
   infoBox.style.boxShadow = "0 3px 6px rgba(0, 0, 0, 0.1)";
   mainContainer.appendChild(infoBox);
 
-  // Bilgilendirme başlığı
+  // Bilgilendirme başlığı - margin azaltıldı
   let infoTitle = document.createElement("h3");
   infoTitle.innerHTML = "📚 Hikaye Tamamlayıcı 🤖";
-  infoTitle.style.margin = "0 0 10px 0";
+  infoTitle.style.margin = "0 0 5px 0"; // 10px'ten azaltıldı
   infoTitle.style.color = "#2A9D8F";
   infoTitle.style.fontSize = "1.2em";
   infoBox.appendChild(infoTitle);
 
-  // Bilgilendirme metni
+  // Bilgilendirme metni - margin azaltıldı
   let infoText = document.createElement("p");
   infoText.innerHTML = "Yapay zeka, <strong>yarım kalmış hikayeleri tamamlayabilir</strong>! Buna <strong>metin tamamlama</strong> denir. Yapay zeka önceki cümlelerden sonra ne gelebileceğini tahmin eder. Yazarlar, öğrenciler ve oyun geliştiriciler bu teknolojiyi kullanır. Şimdi sen de bir AI gibi en mantıklı hikaye devamını seç ve hikayeyi tamamla!";
-  infoText.style.margin = "0 0 10px 0";
+  infoText.style.margin = "0 0 5px 0"; // 10px'ten azaltıldı
   infoText.style.fontSize = "1em";
   infoText.style.lineHeight = "1.4";
   infoBox.appendChild(infoText);
 
-  // İlerleme çubuğu konteyner
+  // İlerleme çubuğu konteyner - margin azaltıldı
   let progressContainer = document.createElement("div");
   progressContainer.style.width = "90%";
   progressContainer.style.maxWidth = "700px";
@@ -6758,7 +7403,7 @@ function setupPlanet4Puzzle4() {
   progressContainer.style.backgroundColor = "rgba(75, 192, 192, 0.2)";
   progressContainer.style.borderRadius = "6px";
   progressContainer.style.overflow = "hidden";
-  progressContainer.style.margin = "10px 0";
+  progressContainer.style.margin = "5px 0"; // 10px'ten azaltıldı
   mainContainer.appendChild(progressContainer);
 
   // İlerleme çubuğu
@@ -6770,17 +7415,17 @@ function setupPlanet4Puzzle4() {
   progressBar.style.transition = "width 0.5s ease";
   progressContainer.appendChild(progressBar);
 
-  // İlerleme metni
+  // İlerleme metni - margin azaltıldı
   let progressText = document.createElement("div");
   progressText.id = "progress-text";
   progressText.innerText = "Hikaye Bölümü: 1/4";
   progressText.style.textAlign = "center";
-  progressText.style.margin = "5px 0 15px 0";
+  progressText.style.margin = "2px 0 8px 0"; // 5px 0 15px 0'dan azaltıldı
   progressText.style.fontWeight = "bold";
   progressText.style.color = "#2A9D8F";
   mainContainer.appendChild(progressText);
 
-  // Hikaye kartı
+  // Hikaye kartı - yukarı taşındı
   let storyCard = document.createElement("div");
   storyCard.style.width = "90%";
   storyCard.style.maxWidth = "700px";
@@ -6793,12 +7438,13 @@ function setupPlanet4Puzzle4() {
   storyCard.style.alignItems = "center";
   storyCard.style.gap = "20px";
   storyCard.style.position = "relative";
+  storyCard.style.marginTop = "-10px"; // Negatif margin ile yukarı taşıma
   mainContainer.appendChild(storyCard);
 
-  // Hikaye resmi konteyner
+  // Hikaye resmi konteyner - height azaltıldı
   let imageContainer = document.createElement("div");
   imageContainer.style.width = "100%";
-  imageContainer.style.height = "200px";
+  imageContainer.style.height = "180px"; // 200px'ten azaltıldı
   imageContainer.style.borderRadius = "8px";
   imageContainer.style.overflow = "hidden";
   imageContainer.style.backgroundColor = "#E9F5F5";
@@ -7176,7 +7822,7 @@ function setupPlanet4Puzzle5() {
   progressText.style.color = "#7B68EE";
   mainContainer.appendChild(progressText);
 
-  // Mesaj kartı
+  // Mesaj kartı - daha yukarı taşındı
   let messageCard = document.createElement("div");
   messageCard.style.width = "90%";
   messageCard.style.maxWidth = "700px";
@@ -7189,21 +7835,8 @@ function setupPlanet4Puzzle5() {
   messageCard.style.alignItems = "center";
   messageCard.style.gap = "20px";
   messageCard.style.position = "relative";
+  messageCard.style.marginTop = "-50px"; // Daha yukarı taşındı (-20px'ten -50px'e)
   mainContainer.appendChild(messageCard);
-
-  // Robot karakter
-  let robotCharacter = document.createElement("div");
-  robotCharacter.style.width = "100px";
-  robotCharacter.style.height = "100px";
-  robotCharacter.style.borderRadius = "50%";
-  robotCharacter.style.backgroundColor = "#F3E5FF";
-  robotCharacter.style.display = "flex";
-  robotCharacter.style.justifyContent = "center";
-  robotCharacter.style.alignItems = "center";
-  robotCharacter.style.fontSize = "3.5em";
-  robotCharacter.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
-  robotCharacter.innerHTML = "🤖";
-  messageCard.appendChild(robotCharacter);
 
   // Emoji mesaj konteyner
   let emojiContainer = document.createElement("div");
@@ -7215,6 +7848,7 @@ function setupPlanet4Puzzle5() {
   emojiContainer.style.display = "flex";
   emojiContainer.style.justifyContent = "center";
   emojiContainer.style.alignItems = "center";
+  emojiContainer.style.marginTop = "10px"; // Robot yerine eklenen margin
   messageCard.appendChild(emojiContainer);
 
   // Emoji mesaj metni
@@ -7353,10 +7987,35 @@ function setupPlanet4Puzzle5() {
     hintButton.disabled = false;
     hintButton.style.opacity = "1";
     
-    // İpucu butonu olayı
+    // İpucu butonu olayı - koyu mavi ipucu mesajı için düzenlendi
     hintButton.onclick = function() {
       if (!hintUsed) {
-        showMessage(emojiMessages[index].hint, "info");
+        // Özel ipucu mesajı oluştur
+        let customMessage = document.createElement("div");
+        customMessage.id = "hint-message";
+        customMessage.innerText = emojiMessages[index].hint;
+        customMessage.style.position = "fixed";
+        customMessage.style.top = "50%";
+        customMessage.style.left = "50%";
+        customMessage.style.transform = "translate(-50%, -50%)";
+        customMessage.style.backgroundColor = "#0D47A1"; // Koyu mavi arka plan
+        customMessage.style.color = "white"; // Beyaz metin
+        customMessage.style.padding = "15px 20px";
+        customMessage.style.borderRadius = "8px";
+        customMessage.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+        customMessage.style.zIndex = "1000";
+        customMessage.style.fontSize = "1.1em";
+        customMessage.style.fontWeight = "bold";
+        customMessage.style.textAlign = "center";
+        customMessage.style.minWidth = "200px";
+        customMessage.style.maxWidth = "80%";
+        document.body.appendChild(customMessage);
+        
+        // 2 saniye sonra kaldır
+        setTimeout(() => {
+          document.body.removeChild(customMessage);
+        }, 2000);
+        
         hintUsed = true;
         hintButton.innerText = "İpucu Kullanıldı";
         hintButton.disabled = true;
@@ -7395,17 +8054,6 @@ function setupPlanet4Puzzle5() {
           optionButton.style.backgroundColor = "#D6FFD6";
           optionButton.style.borderColor = "#4CAF50";
           
-          // Robot animasyonu
-          robotCharacter.innerHTML = "🥳";
-          robotCharacter.style.transform = "rotate(10deg)";
-          setTimeout(() => {
-            robotCharacter.style.transform = "rotate(-10deg)";
-            setTimeout(() => {
-              robotCharacter.style.transform = "rotate(0)";
-              robotCharacter.innerHTML = "🤖";
-            }, 300);
-          }, 300);
-          
           correctAnswers++;
           
           // Sonraki mesaj veya sonuç
@@ -7424,12 +8072,28 @@ function setupPlanet4Puzzle5() {
           optionButton.style.backgroundColor = "#FFCCCC";
           optionButton.style.borderColor = "#FF6B6B";
           
-          // Robot animasyonu
-          robotCharacter.innerHTML = "😕";
+          // Geri bildirim göster - koyu kırmızı hata mesajı
+          let errorMessage = document.createElement("div");
+          errorMessage.innerText = "Yanlış cevap! Tekrar dene.";
+          errorMessage.style.position = "fixed";
+          errorMessage.style.top = "50%";
+          errorMessage.style.left = "50%";
+          errorMessage.style.transform = "translate(-50%, -50%)";
+          errorMessage.style.backgroundColor = "#B71C1C"; // Koyu kırmızı arka plan
+          errorMessage.style.color = "white"; // Beyaz metin
+          errorMessage.style.padding = "15px 20px";
+          errorMessage.style.borderRadius = "8px";
+          errorMessage.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+          errorMessage.style.zIndex = "1000";
+          errorMessage.style.fontSize = "1.1em";
+          errorMessage.style.fontWeight = "bold";
+          errorMessage.style.textAlign = "center";
+          document.body.appendChild(errorMessage);
           
-          // Geri bildirim göster
-          showMessage("Yanlış cevap! Tekrar dene.", "error");
-          setTimeout(clearMessage, 2000);
+          // 2 saniye sonra kaldır
+          setTimeout(() => {
+            document.body.removeChild(errorMessage);
+          }, 2000);
           
           // Butonu salla
           optionButton.style.transform = "translateX(5px)";
@@ -7463,12 +8127,12 @@ function setupPlanet4Puzzle5() {
     resultTitle.style.margin = "20px 0";
     messageCard.appendChild(resultTitle);
     
-    // Sonuç robotu
-    let resultRobot = document.createElement("div");
-    resultRobot.style.fontSize = "5em";
-    resultRobot.innerHTML = "🎉";
-    resultRobot.style.margin = "10px 0";
-    messageCard.appendChild(resultRobot);
+    // Sonuç emojisi
+    let resultEmoji = document.createElement("div");
+    resultEmoji.style.fontSize = "5em";
+    resultEmoji.innerHTML = "🎉";
+    resultEmoji.style.margin = "10px 0";
+    messageCard.appendChild(resultEmoji);
     
     // Skor metni
     let scoreText = document.createElement("p");
@@ -8768,8 +9432,8 @@ function setupPlanet5Puzzle3() {
         
         if (isAdjacentCell(cellX, cellY, robotPosition.x, robotPosition.y)) {
           moveRobot(cellX, cellY);
-      } else {
-        playWrongSound();
+        } else {
+          playWrongSound();
           showMessage("Robot sadece yanındaki bir hücreye hareket edebilir!", "error");
         }
       });
@@ -8920,420 +9584,532 @@ function setupPlanet5Puzzle3() {
   `;
   infoPanel.appendChild(infoPanelContent);
 
-  // Yardımcı Fonksiyonlar
-  function positionRobot(x, y) {
-    // Grid içindeki konuma göre robot pozisyonunu hesapla
-    if (gridRect && cellWidth && cellHeight) {
-      const offsetX = (cellWidth * x) + (cellWidth / 2) - 15; // Ortalama için -15
-      const offsetY = (cellHeight * y) + (cellHeight / 2) - 15;
-      
-      robotElement.style.left = `${offsetX}px`;
-      robotElement.style.top = `${offsetY}px`;
-    }
-  }
-
-  function isAdjacentCell(x1, y1, x2, y2) {
-    // Yatay, dikey veya çapraz komşu mu kontrol et
-    const dx = Math.abs(x1 - x2);
-    const dy = Math.abs(y1 - y2);
-    return (dx <= 1 && dy <= 1) && !(dx === 0 && dy === 0);
-  }
-
-  function updateEnergyDisplay() {
-    // Enerji çubuğu rengi ve genişliğini güncelle
-    const percentage = Math.max(0, Math.min(100, energy));
-    energyBarInner.style.width = `${percentage}%`;
-    
-    // Enerji seviyesine göre renk değiştir
-    if (percentage > 60) {
-      energyBarInner.style.backgroundColor = "#2ecc71"; // Yeşil
-    } else if (percentage > 30) {
-      energyBarInner.style.backgroundColor = "#f39c12"; // Turuncu
-    } else {
-      energyBarInner.style.backgroundColor = "#e74c3c"; // Kırmızı
-    }
-    
-    energyText.innerText = `${energy} / 100`;
-  }
-
-  function updateScoreDisplay() {
-    scoreText.innerText = `${score}`;
-  }
-
-  function addActionLog(message) {
-    let logItem = document.createElement("div");
-    logItem.innerText = `• ${message}`;
-    logItem.style.marginBottom = "3px";
-    logItem.style.borderBottom = "1px solid #ecf0f1";
-    logItem.style.paddingBottom = "3px";
-    logItem.style.color = "#000000"; // Siyah renk
-    actionsList.prepend(logItem);
-    
-    // Scroll liste başına
-    actionsList.scrollTop = 0;
-  }
-
-  function moveRobot(x, y) {
-    // Enerji kontrolü
-    if (energy < movementEnergyCost) {
-      playWrongSound();
-      showMessage("Yeterli enerji yok! En az 5 enerji gerekiyor.", "error");
-      return;
-    }
-    
-    // Enerjiyi düşür
-    energy -= movementEnergyCost;
-    updateEnergyDisplay();
-    
-    // Robotun eski konumundan arka plan rengini kaldır
-    if (robotCell) {
-      const isStartCell = robotCell.dataset.type === "start";
-      robotCell.style.backgroundColor = isStartCell ? "#d6eaf8" : "#fff";
-    }
-    
-    // Yeni konum
-    robotPosition = { x, y };
-    
-    // Robot animasyonu
-    positionRobot(x, y);
-    
-    // Tıklanan hücreyi bul
-    const cells = document.querySelectorAll(".map-cell");
-    cells.forEach(cell => {
-      if (parseInt(cell.dataset.x) === x && parseInt(cell.dataset.y) === y) {
-        robotCell = cell;
-        cell.style.backgroundColor = "#d6eaf8"; // Robotun bulunduğu hücre
+    // Yardımcı Fonksiyonlar
+    function positionRobot(x, y) {
+      // Grid içindeki konuma göre robot pozisyonunu hesapla
+      if (gridRect && cellWidth && cellHeight) {
+        const offsetX = (cellWidth * x) + (cellWidth / 2) - 15; // Ortalama için -15
+        const offsetY = (cellHeight * y) + (cellHeight / 2) - 15;
+        
+        robotElement.style.left = `${offsetX}px`;
+        robotElement.style.top = `${offsetY}px`;
       }
-    });
-    
-    // Loglama
-    addActionLog(`Robot (${x},${y}) konumuna hareket etti. (-5 enerji)`);
-    
-    // Hücre türüne göre işlem yap (biraz gecikme ekleyerek daha iyi kullanıcı deneyimi)
-    setTimeout(() => {
-      checkCellAction(robotCell);
-    }, 400);
-  }
-
-  function checkCellAction(cell) {
-    const type = cell.dataset.type;
-    
-    // Görev hücresi ise
-    if (type === "task") {
-      const taskType = cell.dataset.taskType;
-      const points = parseInt(cell.dataset.points);
-      const energyCost = parseInt(cell.dataset.energyCost);
-      const taskId = `${cell.dataset.x}-${cell.dataset.y}`;
+    }
+  
+    function isAdjacentCell(x1, y1, x2, y2) {
+      // Yatay, dikey veya çapraz komşu mu kontrol et
+      const dx = Math.abs(x1 - x2);
+      const dy = Math.abs(y1 - y2);
+      return (dx <= 1 && dy <= 1) && !(dx === 0 && dy === 0);
+    }
+  
+    function updateEnergyDisplay() {
+      // Enerji çubuğu rengi ve genişliğini güncelle
+      const percentage = Math.max(0, Math.min(100, energy));
+      energyBarInner.style.width = `${percentage}%`;
       
-      // Bu görev daha önce tamamlanmış mı kontrol et
-      if (completedTasks.includes(taskId)) {
-        addActionLog("Bu görev zaten tamamlandı.");
-        return;
+      // Enerji seviyesine göre renk değiştir
+      if (percentage > 60) {
+        energyBarInner.style.backgroundColor = "#2ecc71"; // Yeşil
+      } else if (percentage > 30) {
+        energyBarInner.style.backgroundColor = "#f39c12"; // Turuncu
+      } else {
+        energyBarInner.style.backgroundColor = "#e74c3c"; // Kırmızı
       }
       
-      // Yeterli enerji var mı?
-      if (energy < energyCost) {
+      energyText.innerText = `${energy} / 100`;
+    }
+  
+    function updateScoreDisplay() {
+      scoreText.innerText = `${score}`;
+    }
+  
+    function addActionLog(message) {
+      let logItem = document.createElement("div");
+      logItem.innerText = `• ${message}`;
+      logItem.style.marginBottom = "3px";
+      logItem.style.borderBottom = "1px solid #ecf0f1";
+      logItem.style.paddingBottom = "3px";
+      logItem.style.color = "#000000"; // Siyah renk
+      actionsList.prepend(logItem);
+      
+      // Scroll liste başına
+      actionsList.scrollTop = 0;
+    }
+  
+    function moveRobot(x, y) {
+      // Enerji kontrolü
+      if (energy < movementEnergyCost) {
         playWrongSound();
-        showMessage(`Bu görev için yeterli enerji yok! ${energyCost} enerji gerekiyor.`, "error");
+        showMessage("Yeterli enerji yok! En az 5 enerji gerekiyor.", "error");
+        // Enerji yetersiz olduğunda başarısız olduğunu göster ve bölümü yeniden başlat
+        showFailMessage("Hareket için yeterli enerji yok! En az 5 enerji gerekiyor.");
         return;
       }
       
-      // Görev türüne göre işlem
-      let taskName = "";
-      switch (taskType) {
-        case "analyze":
-          taskName = "Analiz";
-          break;
-        case "lift":
-          taskName = "Kaldırma";
-          break;
-        case "communicate":
-          taskName = "İletişim";
-          break;
-        case "obstacle":
-          taskName = "Engel Aşma";
-          break;
+      // Enerjiyi düşür
+      energy -= movementEnergyCost;
+      updateEnergyDisplay();
+      
+      // Robotun eski konumundan arka plan rengini kaldır
+      if (robotCell) {
+        const isStartCell = robotCell.dataset.type === "start";
+        robotCell.style.backgroundColor = isStartCell ? "#d6eaf8" : "#fff";
       }
       
-      // Enerjiyi düşür, puanı artır
-      energy -= energyCost;
-      score += points;
-      updateEnergyDisplay();
-      updateScoreDisplay();
+      // Yeni konum
+      robotPosition = { x, y };
       
-      // Görev tamamlandı olarak işaretle
-      completedTasks.push(taskId);
-      cell.style.border = "2px solid #27ae60";
+      // Robot animasyonu
+      positionRobot(x, y);
+      
+      // Tıklanan hücreyi bul
+      const cells = document.querySelectorAll(".map-cell");
+      cells.forEach(cell => {
+        if (parseInt(cell.dataset.x) === x && parseInt(cell.dataset.y) === y) {
+          robotCell = cell;
+          cell.style.backgroundColor = "#d6eaf8"; // Robotun bulunduğu hücre
+        }
+      });
       
       // Loglama
-      addActionLog(`${taskName} görevi tamamlandı! +${points} puan, -${energyCost} enerji`);
-      playCorrectSound();
+      addActionLog(`Robot (${x},${y}) konumuna hareket etti. (-5 enerji)`);
       
-      // Görev tamamlandığında hafif görsel efekt
-      cell.animate(
-        [
-          { transform: "scale(1)" },
-          { transform: "scale(1.1)" },
-          { transform: "scale(1)" }
-        ],
-        {
-          duration: 500,
-          iterations: 1
+      // Hücre türüne göre işlem yap (biraz gecikme ekleyerek daha iyi kullanıcı deneyimi)
+      setTimeout(() => {
+        checkCellAction(robotCell);
+      }, 400);
+    }
+  
+    function checkCellAction(cell) {
+      const type = cell.dataset.type;
+      
+      // Görev hücresi ise
+      if (type === "task") {
+        const taskType = cell.dataset.taskType;
+        const points = parseInt(cell.dataset.points);
+        const energyCost = parseInt(cell.dataset.energyCost);
+        const taskId = `${cell.dataset.x}-${cell.dataset.y}`;
+        
+        // Bu görev daha önce tamamlanmış mı kontrol et
+        if (completedTasks.includes(taskId)) {
+          addActionLog("Bu görev zaten tamamlandı.");
+          return;
         }
-      );
-      
-      // Robot'un da bir animasyonu olsun
-      robotElement.animate(
-        [
-          { transform: "rotate(0deg)" },
-          { transform: "rotate(20deg)" },
-          { transform: "rotate(-20deg)" },
-          { transform: "rotate(0deg)" }
-        ],
-        {
-          duration: 600,
-          iterations: 1
+        
+        // Yeterli enerji var mı?
+        if (energy < energyCost) {
+          playWrongSound();
+          showMessage(`Bu görev için yeterli enerji yok! ${energyCost} enerji gerekiyor.`, "error");
+          // Görev için enerji yetersiz olduğunda başarısız olduğunu göster ve bölümü yeniden başlat
+          showFailMessage(`Bu görev için yeterli enerji yok! ${energyCost} enerji gerekiyor. Başka bir strateji dene.`);
+          return;
         }
-      );
-      
-      // Tüm görevler tamamlandı mı kontrol et
-      const totalTasks = mapData.filter(item => item.type === "task").length;
-      if (completedTasks.length >= totalTasks || completedTasks.length >= 5) {
-        // Bulmaca tamamlandı
-        setTimeout(showCompletionMessage, 800);
+        
+        // Görev türüne göre işlem
+        let taskName = "";
+        switch (taskType) {
+          case "analyze":
+            taskName = "Analiz";
+            break;
+          case "lift":
+            taskName = "Kaldırma";
+            break;
+          case "communicate":
+            taskName = "İletişim";
+            break;
+          case "obstacle":
+            taskName = "Engel Aşma";
+            break;
+        }
+        
+        // Enerjiyi düşür, puanı artır
+        energy -= energyCost;
+        score += points;
+        updateEnergyDisplay();
+        updateScoreDisplay();
+        
+        // Görev tamamlandı olarak işaretle
+        completedTasks.push(taskId);
+        cell.style.border = "2px solid #27ae60";
+        
+        // Loglama
+        addActionLog(`${taskName} görevi tamamlandı! +${points} puan, -${energyCost} enerji`);
+        playCorrectSound();
+        
+        // Görev tamamlandığında hafif görsel efekt
+        cell.animate(
+          [
+            { transform: "scale(1)" },
+            { transform: "scale(1.1)" },
+            { transform: "scale(1)" }
+          ],
+          {
+            duration: 500,
+            iterations: 1
+          }
+        );
+        
+        // Robot'un da bir animasyonu olsun
+        robotElement.animate(
+          [
+            { transform: "rotate(0deg)" },
+            { transform: "rotate(20deg)" },
+            { transform: "rotate(-20deg)" },
+            { transform: "rotate(0deg)" }
+          ],
+          {
+            duration: 600,
+            iterations: 1
+          }
+        );
+        
+        // Tüm görevler tamamlandı mı kontrol et
+        const totalTasks = mapData.filter(item => item.type === "task").length;
+        if (completedTasks.length >= totalTasks || completedTasks.length >= 5) {
+          // Bulmaca tamamlandı
+          setTimeout(showCompletionMessage, 800);
+        }
+        
+        // Enerji yetersiz duruma düştü mü kontrol et (minimum hareket enerjisi için)
+        if (energy < movementEnergyCost) {
+          // Hareket edecek enerji kalmadı, başarısız olduğunu göster ve bölümü yeniden başlat
+          setTimeout(() => {
+            showFailMessage("Hareket edecek yeterli enerji kalmadı! Başka bir strateji dene.");
+          }, 600);
+        }
+      }
+      // Şarj istasyonu ise
+      else if (type === "charger") {
+        const energyBoost = parseInt(cell.dataset.energyBoost);
+        
+        // Enerjiyi artır (maksimum 100)
+        energy = Math.min(100, energy + energyBoost);
+        updateEnergyDisplay();
+        
+        // Loglama
+        addActionLog(`Robot şarj oldu! +${energyBoost} enerji`);
+        
+        // Şarj efekti
+        cell.animate(
+          [
+            { backgroundColor: "#fff" },
+            { backgroundColor: "#f1c40f" },
+            { backgroundColor: "#fff" }
+          ],
+          {
+            duration: 1000,
+            iterations: 1
+          }
+        );
+        
+        // Robot şarj animasyonu
+        robotElement.animate(
+          [
+            { filter: "brightness(1)" },
+            { filter: "brightness(1.5)" },
+            { filter: "brightness(1)" }
+          ],
+          {
+            duration: 1000,
+            iterations: 1
+          }
+        );
       }
     }
-    // Şarj istasyonu ise
-    else if (type === "charger") {
-      const energyBoost = parseInt(cell.dataset.energyBoost);
+  
+    // Başarısız olma durumunda mesaj göster ve bölümü yeniden başlat
+    function showFailMessage(failMessage) {
+      // Oyun alanını devre dışı bırak
+      mapGrid.style.pointerEvents = "none";
       
-      // Enerjiyi artır (maksimum 100)
-      energy = Math.min(100, energy + energyBoost);
-      updateEnergyDisplay();
-      
-      // Loglama
-      addActionLog(`Robot şarj oldu! +${energyBoost} enerji`);
-      
-      // Şarj efekti
-      cell.animate(
-        [
-          { backgroundColor: "#fff" },
-          { backgroundColor: "#f1c40f" },
-          { backgroundColor: "#fff" }
-        ],
-        {
-          duration: 1000,
-          iterations: 1
-        }
-      );
-      
-      // Robot şarj animasyonu
+      // Başarısız olma efekti
       robotElement.animate(
         [
           { filter: "brightness(1)" },
-          { filter: "brightness(1.5)" },
-          { filter: "brightness(1)" }
+          { filter: "brightness(0.5)" },
+          { filter: "brightness(0.2)" }
         ],
         {
-          duration: 1000,
-          iterations: 1
-        }
-      );
-    }
-    
-    // Enerji tükendi mi kontrol et
-    if (energy <= 0) {
-      showMessage("Enerji tükendi! Daha verimli bir strateji deneyin.", "error");
-      setTimeout(showCompletionMessage, 1200);
-    }
-  }
-
-  // Tamamlama mesajını göster
-  function showCompletionMessage() {
-    // Mevcut oyun alanını temizle
-    mainContainer.innerHTML = "";
-    
-    // Sonuç kartı
-    let completionCard = document.createElement("div");
-    completionCard.style.width = "90%";
-    completionCard.style.maxWidth = "600px";
-    completionCard.style.backgroundColor = "white";
-    completionCard.style.borderRadius = "12px";
-    completionCard.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.1)";
-    completionCard.style.padding = "25px";
-    completionCard.style.display = "flex";
-    completionCard.style.flexDirection = "column";
-    completionCard.style.alignItems = "center";
-    completionCard.style.gap = "20px";
-    completionCard.style.position = "relative";
-    completionCard.style.overflow = "hidden";
-    mainContainer.appendChild(completionCard);
-    
-    // Başarı durumuna göre tebrik mesajı
-    let congratsTitle = document.createElement("h3");
-    
-    if (completedTasks.length >= 5) {
-      congratsTitle.innerText = "Harika İş! 🎉";
-      congratsTitle.style.color = "#27ae60";
-    } else if (completedTasks.length >= 3) {
-      congratsTitle.innerText = "İyi İş! 👍";
-      congratsTitle.style.color = "#f39c12";
-    } else {
-      congratsTitle.innerText = "Daha Verimli Olabilirsin 🤔";
-      congratsTitle.style.color = "#3498db";
-    }
-    
-    congratsTitle.style.margin = "0";
-    congratsTitle.style.fontSize = "1.5em";
-    completionCard.appendChild(congratsTitle);
-    
-    // Sonuç bilgileri
-    let resultsContainer = document.createElement("div");
-    resultsContainer.style.width = "80%";
-    resultsContainer.style.display = "flex";
-    resultsContainer.style.justifyContent = "space-between";
-    resultsContainer.style.margin = "10px 0";
-    completionCard.appendChild(resultsContainer);
-    
-    // Toplam puan
-    let scoreResult = document.createElement("div");
-    scoreResult.style.textAlign = "center";
-    scoreResult.style.color = "#000000"; // Siyah renk
-    scoreResult.innerHTML = `<div style="font-size: 1.2em; font-weight: bold; color: #2980b9;">${score}</div><div style="font-size: 0.9em;">Toplam Puan</div>`;
-    resultsContainer.appendChild(scoreResult);
-    
-    // Kalan enerji
-    let energyResult = document.createElement("div");
-    energyResult.style.textAlign = "center";
-    energyResult.style.color = "#000000"; // Siyah renk
-    energyResult.innerHTML = `<div style="font-size: 1.2em; font-weight: bold; color: #27ae60;">${energy}</div><div style="font-size: 0.9em;">Kalan Enerji</div>`;
-    resultsContainer.appendChild(energyResult);
-    
-    // Tamamlanan görevler
-    let tasksResult = document.createElement("div");
-    tasksResult.style.textAlign = "center";
-    tasksResult.style.color = "#000000"; // Siyah renk
-    tasksResult.innerHTML = `<div style="font-size: 1.2em; font-weight: bold; color: #e74c3c;">${completedTasks.length}</div><div style="font-size: 0.9em;">Tamamlanan Görevler</div>`;
-    resultsContainer.appendChild(tasksResult);
-    
-    // Tebrik mesajı
-    let congratsMessage = document.createElement("p");
-    congratsMessage.innerHTML = `Robot enerji yönetimi, yapay zeka sistemlerinin verimli çalışması için çok önemlidir. Gerçek robotlarda da enerji sınırlıdır ve kaynakların akıllıca kullanılması gerekir. Bu deneyim, robotik sistemlerde kaynak yönetiminin ne kadar kritik olduğunu gösterdi!`;
-    congratsMessage.style.textAlign = "center";
-    congratsMessage.style.lineHeight = "1.5";
-    congratsMessage.style.margin = "10px 0";
-    congratsMessage.style.color = "#000000"; // Siyah renk
-    completionCard.appendChild(congratsMessage);
-    
-    // İpucu mesajı
-    if (completedTasks.length < 5) {
-      let hintMessage = document.createElement("p");
-      hintMessage.innerHTML = `<strong>İpucu:</strong> Daha fazla görev tamamlamak için önce şarj istasyonunu kullanabilir veya düşük enerji gerektiren görevleri önceliklendirebilirsin.`;
-      hintMessage.style.fontSize = "0.9em";
-      hintMessage.style.color = "#000000"; // Siyah renk
-      hintMessage.style.textAlign = "center";
-      hintMessage.style.padding = "10px";
-      hintMessage.style.backgroundColor = "#f9f9f9";
-      hintMessage.style.borderRadius = "5px";
-      completionCard.appendChild(hintMessage);
-    }
-    
-    // Sonraki bulmaca butonu
-    let nextButton = document.createElement("button");
-    nextButton.innerText = "Sonraki Bulmaca";
-    nextButton.style.backgroundColor = "#2980b9";
-    nextButton.style.color = "white";
-    nextButton.style.border = "none";
-    nextButton.style.padding = "12px 24px";
-    nextButton.style.borderRadius = "30px";
-    nextButton.style.fontSize = "1em";
-    nextButton.style.fontWeight = "bold";
-    nextButton.style.cursor = "pointer";
-    nextButton.style.transition = "background-color 0.3s";
-    nextButton.style.boxShadow = "0 3px 6px rgba(0, 0, 0, 0.1)";
-    nextButton.style.margin = "10px 0";
-    
-    nextButton.addEventListener("mouseover", function() {
-      this.style.backgroundColor = "#3498db";
-    });
-    
-    nextButton.addEventListener("mouseout", function() {
-      this.style.backgroundColor = "#2980b9";
-    });
-    
-    nextButton.addEventListener("click", function() {
-      playClickSound();
-      goNextPuzzle();
-    });
-    
-    completionCard.appendChild(nextButton);
-    
-    // Konfeti efekti
-    if (completedTasks.length >= 3) {
-      addConfetti();
-    }
-  }
-
-  // Konfeti efekti
-  function addConfetti() {
-    // Konfeti konteyneri
-    let confettiContainer = document.createElement("div");
-    confettiContainer.style.position = "absolute";
-    confettiContainer.style.top = "0";
-    confettiContainer.style.left = "0";
-    confettiContainer.style.width = "100%";
-    confettiContainer.style.height = "100%";
-    confettiContainer.style.pointerEvents = "none";
-    confettiContainer.style.zIndex = "5";
-    confettiContainer.style.overflow = "hidden";
-    mainContainer.appendChild(confettiContainer);
-    
-    // Konfeti parçacıklarını oluştur
-    const colors = ["#3498db", "#2ecc71", "#f1c40f", "#9b59b6", "#e74c3c"];
-    
-    for (let i = 0; i < 80; i++) {
-      let confetti = document.createElement("div");
-      confetti.style.position = "absolute";
-      confetti.style.width = (Math.random() * 10 + 5) + "px";
-      confetti.style.height = (Math.random() * 10 + 5) + "px";
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "0";
-      confetti.style.top = "-20px";
-      confetti.style.left = Math.random() * 100 + "%";
-      confetti.style.transform = "rotate(" + (Math.random() * 360) + "deg)";
-      confetti.style.opacity = Math.random() + 0.4;
-      confettiContainer.appendChild(confetti);
-      
-      // Animasyon
-      const animationDuration = Math.random() * 3 + 2;
-      const animationDelay = Math.random() * 2;
-      
-      confetti.animate(
-        [
-          { top: "-20px", transform: "rotate(0deg)" },
-          { top: confettiContainer.offsetHeight + "px", transform: "rotate(720deg)" }
-        ],
-        {
-          duration: animationDuration * 1000,
-          delay: animationDelay * 1000,
-          easing: "cubic-bezier(0.215, 0.61, 0.355, 1)",
+          duration: 800,
           iterations: 1,
           fill: "forwards"
         }
       );
       
-      // Konfeti temizleme
-      setTimeout(() => {
-        confetti.remove();
-      }, (animationDuration + animationDelay) * 1000);
+      // Başarısız olma mesajı
+      playWrongSound();
+      
+      // Hemen başarısız mesaj kartını göster
+      // Mevcut oyun alanını temizle
+      mainContainer.innerHTML = "";
+      
+      // Başarısız mesaj kartı
+      let failCard = document.createElement("div");
+      failCard.style.width = "90%";
+      failCard.style.maxWidth = "600px";
+      failCard.style.backgroundColor = "white";
+      failCard.style.borderRadius = "12px";
+      failCard.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.1)";
+      failCard.style.padding = "25px";
+      failCard.style.display = "flex";
+      failCard.style.flexDirection = "column";
+      failCard.style.alignItems = "center";
+      failCard.style.gap = "20px";
+      mainContainer.appendChild(failCard);
+      
+      // Başarısız başlık
+      let failTitle = document.createElement("h3");
+      failTitle.innerText = "Enerji Yetersiz! 🔋";
+      failTitle.style.margin = "0";
+      failTitle.style.fontSize = "1.5em";
+      failTitle.style.color = "#e74c3c";
+      failCard.appendChild(failTitle);
+      
+      // Başarısız mesaj
+      let failMessageElement = document.createElement("p");
+      failMessageElement.innerHTML = failMessage || "Robotun enerjisi yetersiz kaldı. Daha verimli bir strateji denemelisin!";
+      failMessageElement.style.textAlign = "center";
+      failMessageElement.style.lineHeight = "1.5";
+      failMessageElement.style.margin = "10px 0";
+      failMessageElement.style.color = "#000000";
+      failCard.appendChild(failMessageElement);
+      
+      // İpucu mesajı
+      let hintMessage = document.createElement("p");
+      hintMessage.innerHTML = "<strong>İpucu:</strong> Önce şarj istasyonunu bulmayı dene ve enerji maliyeti düşük görevleri önceliklendir. Her hareketi dikkatli planla!";
+      hintMessage.style.fontSize = "0.9em";
+      hintMessage.style.color = "#000000";
+      hintMessage.style.textAlign = "center";
+      hintMessage.style.padding = "10px";
+      hintMessage.style.backgroundColor = "#f9f9f9";
+      hintMessage.style.borderRadius = "5px";
+      failCard.appendChild(hintMessage);
+      
+      // Yeniden başlat butonu
+      let retryButton = document.createElement("button");
+      retryButton.innerText = "Tekrar Dene";
+      retryButton.style.backgroundColor = "#e74c3c";
+      retryButton.style.color = "white";
+      retryButton.style.border = "none";
+      retryButton.style.padding = "12px 24px";
+      retryButton.style.borderRadius = "30px";
+      retryButton.style.fontSize = "1em";
+      retryButton.style.fontWeight = "bold";
+      retryButton.style.cursor = "pointer";
+      retryButton.style.transition = "background-color 0.3s";
+      retryButton.style.boxShadow = "0 3px 6px rgba(0, 0, 0, 0.1)";
+      retryButton.style.margin = "10px 0";
+      
+      retryButton.addEventListener("mouseover", function() {
+        this.style.backgroundColor = "#c0392b";
+      });
+      
+      retryButton.addEventListener("mouseout", function() {
+        this.style.backgroundColor = "#e74c3c";
+      });
+      
+      retryButton.addEventListener("click", function() {
+        playClickSound();
+        restartPuzzle();
+      });
+      
+      failCard.appendChild(retryButton);
     }
-    
-    // Konfeti konteyneri temizleme
-    setTimeout(() => {
-      confettiContainer.remove();
-    }, 7000);
+  
+    // Bulmacayı yeniden başlat
+    function restartPuzzle() {
+      // Mevcut bulmacayı temizle ve yeniden başlat
+      puzzleArea.innerHTML = "";
+      setupPlanet5Puzzle3();
+    }
+  
+    // Tamamlama mesajını göster
+    function showCompletionMessage() {
+      // Mevcut oyun alanını temizle
+      mainContainer.innerHTML = "";
+      
+      // Sonuç kartı
+      let completionCard = document.createElement("div");
+      completionCard.style.width = "90%";
+      completionCard.style.maxWidth = "600px";
+      completionCard.style.backgroundColor = "white";
+      completionCard.style.borderRadius = "12px";
+      completionCard.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.1)";
+      completionCard.style.padding = "25px";
+      completionCard.style.display = "flex";
+      completionCard.style.flexDirection = "column";
+      completionCard.style.alignItems = "center";
+      completionCard.style.gap = "20px";
+      completionCard.style.position = "relative";
+      completionCard.style.overflow = "hidden";
+      mainContainer.appendChild(completionCard);
+      
+      // Başarı durumuna göre tebrik mesajı
+      let congratsTitle = document.createElement("h3");
+      
+      if (completedTasks.length >= 5) {
+        congratsTitle.innerText = "Harika İş! 🎉";
+        congratsTitle.style.color = "#27ae60";
+      } else if (completedTasks.length >= 3) {
+        congratsTitle.innerText = "İyi İş! 👍";
+        congratsTitle.style.color = "#f39c12";
+      } else {
+        congratsTitle.innerText = "Daha Verimli Olabilirsin 🤔";
+        congratsTitle.style.color = "#3498db";
+      }
+      
+      congratsTitle.style.margin = "0";
+      congratsTitle.style.fontSize = "1.5em";
+      completionCard.appendChild(congratsTitle);
+      
+      // Sonuç bilgileri
+      let resultsContainer = document.createElement("div");
+      resultsContainer.style.width = "80%";
+      resultsContainer.style.display = "flex";
+      resultsContainer.style.justifyContent = "space-between";
+      resultsContainer.style.margin = "10px 0";
+      completionCard.appendChild(resultsContainer);
+      
+      // Toplam puan
+      let scoreResult = document.createElement("div");
+      scoreResult.style.textAlign = "center";
+      scoreResult.style.color = "#000000"; // Siyah renk
+      scoreResult.innerHTML = `<div style="font-size: 1.2em; font-weight: bold; color: #2980b9;">${score}</div><div style="font-size: 0.9em;">Toplam Puan</div>`;
+      resultsContainer.appendChild(scoreResult);
+      
+      // Kalan enerji
+      let energyResult = document.createElement("div");
+      energyResult.style.textAlign = "center";
+      energyResult.style.color = "#000000"; // Siyah renk
+      energyResult.innerHTML = `<div style="font-size: 1.2em; font-weight: bold; color: #27ae60;">${energy}</div><div style="font-size: 0.9em;">Kalan Enerji</div>`;
+      resultsContainer.appendChild(energyResult);
+      
+      // Tamamlanan görevler
+      let tasksResult = document.createElement("div");
+      tasksResult.style.textAlign = "center";
+      tasksResult.style.color = "#000000"; // Siyah renk
+      tasksResult.innerHTML = `<div style="font-size: 1.2em; font-weight: bold; color: #e74c3c;">${completedTasks.length}</div><div style="font-size: 0.9em;">Tamamlanan Görevler</div>`;
+      resultsContainer.appendChild(tasksResult);
+      
+      // Tebrik mesajı
+      let congratsMessage = document.createElement("p");
+      congratsMessage.innerHTML = `Robot enerji yönetimi, yapay zeka sistemlerinin verimli çalışması için çok önemlidir. Gerçek robotlarda da enerji sınırlıdır ve kaynakların akıllıca kullanılması gerekir. Bu deneyim, robotik sistemlerde kaynak yönetiminin ne kadar kritik olduğunu gösterdi!`;
+      congratsMessage.style.textAlign = "center";
+      congratsMessage.style.lineHeight = "1.5";
+      congratsMessage.style.margin = "10px 0";
+      congratsMessage.style.color = "#000000"; // Siyah renk
+      completionCard.appendChild(congratsMessage);
+      
+      // İpucu mesajı
+      if (completedTasks.length < 5) {
+        let hintMessage = document.createElement("p");
+        hintMessage.innerHTML = `<strong>İpucu:</strong> Daha fazla görev tamamlamak için önce şarj istasyonunu kullanabilir veya düşük enerji gerektiren görevleri önceliklendirebilirsin.`;
+        hintMessage.style.fontSize = "0.9em";
+        hintMessage.style.color = "#000000"; // Siyah renk
+        hintMessage.style.textAlign = "center";
+        hintMessage.style.padding = "10px";
+        hintMessage.style.backgroundColor = "#f9f9f9";
+        hintMessage.style.borderRadius = "5px";
+        completionCard.appendChild(hintMessage);
+      }
+      
+      // Sonraki bulmaca butonu
+      let nextButton = document.createElement("button");
+      nextButton.innerText = "Sonraki Bulmaca";
+      nextButton.style.backgroundColor = "#2980b9";
+      nextButton.style.color = "white";
+      nextButton.style.border = "none";
+      nextButton.style.padding = "12px 24px";
+      nextButton.style.borderRadius = "30px";
+      nextButton.style.fontSize = "1em";
+      nextButton.style.fontWeight = "bold";
+      nextButton.style.cursor = "pointer";
+      nextButton.style.transition = "background-color 0.3s";
+      nextButton.style.boxShadow = "0 3px 6px rgba(0, 0, 0, 0.1)";
+      nextButton.style.margin = "10px 0";
+      
+      nextButton.addEventListener("mouseover", function() {
+        this.style.backgroundColor = "#3498db";
+      });
+      
+      nextButton.addEventListener("mouseout", function() {
+        this.style.backgroundColor = "#2980b9";
+      });
+      
+      nextButton.addEventListener("click", function() {
+        playClickSound();
+        goNextPuzzle();
+      });
+      
+      completionCard.appendChild(nextButton);
+      
+      // Konfeti efekti
+      if (completedTasks.length >= 3) {
+        addConfetti();
+      }
+    }
+  
+    // Konfeti efekti
+    function addConfetti() {
+      // Konfeti konteyneri
+      let confettiContainer = document.createElement("div");
+      confettiContainer.style.position = "absolute";
+      confettiContainer.style.top = "0";
+      confettiContainer.style.left = "0";
+      confettiContainer.style.width = "100%";
+      confettiContainer.style.height = "100%";
+      confettiContainer.style.pointerEvents = "none";
+      confettiContainer.style.zIndex = "5";
+      confettiContainer.style.overflow = "hidden";
+      mainContainer.appendChild(confettiContainer);
+      
+      // Konfeti parçacıklarını oluştur
+      const colors = ["#3498db", "#2ecc71", "#f1c40f", "#9b59b6", "#e74c3c"];
+      
+      for (let i = 0; i < 80; i++) {
+        let confetti = document.createElement("div");
+        confetti.style.position = "absolute";
+        confetti.style.width = (Math.random() * 10 + 5) + "px";
+        confetti.style.height = (Math.random() * 10 + 5) + "px";
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "0";
+        confetti.style.top = "-20px";
+        confetti.style.left = Math.random() * 100 + "%";
+        confetti.style.transform = "rotate(" + (Math.random() * 360) + "deg)";
+        confetti.style.opacity = Math.random() + 0.4;
+        confettiContainer.appendChild(confetti);
+        
+        // Animasyon
+        const animationDuration = Math.random() * 3 + 2;
+        const animationDelay = Math.random() * 2;
+        
+        confetti.animate(
+          [
+            { top: "-20px", transform: "rotate(0deg)" },
+            { top: confettiContainer.offsetHeight + "px", transform: "rotate(720deg)" }
+          ],
+          {
+            duration: animationDuration * 1000,
+            delay: animationDelay * 1000,
+            easing: "cubic-bezier(0.215, 0.61, 0.355, 1)",
+            iterations: 1,
+            fill: "forwards"
+          }
+        );
+        
+        // Konfeti temizleme
+        setTimeout(() => {
+          confetti.remove();
+        }, (animationDuration + animationDelay) * 1000);
+      }
+      
+      // Konfeti konteyneri temizleme
+      setTimeout(() => {
+        confettiContainer.remove();
+      }, 7000);
+    }
   }
-}
 
 function setupPlanet5Puzzle4() {
   puzzleHintText.innerText = "IPUCU: Robottaki arızaları bulmak için parçalarını incele ve sorunları çöz.";
@@ -10887,6 +11663,22 @@ function setupPlanet5Puzzle5() {
   progress.style.fontWeight = "bold";
   scoreContainer.appendChild(progress);
 
+  // Yönlendirme mesajı
+  let instructionMessage = document.createElement("div");
+  instructionMessage.id = "instruction-message";
+  instructionMessage.style.backgroundColor = "rgba(52, 152, 219, 0.1)";
+  instructionMessage.style.color = "#000000";
+  instructionMessage.style.padding = "8px 12px";
+  instructionMessage.style.borderRadius = "8px";
+  instructionMessage.style.marginBottom = "10px";
+  instructionMessage.style.width = "100%";
+  instructionMessage.style.textAlign = "center";
+  instructionMessage.style.fontWeight = "500";
+  instructionMessage.style.fontSize = "0.9em";
+  instructionMessage.style.border = "1px solid rgba(52, 152, 219, 0.3)";
+  instructionMessage.innerText = "Başlamak için yeşil BAŞLA noktasına tıkla!";
+  gameArea.appendChild(instructionMessage);
+
   // Labirent konteyner
   let labyrinthContainer = document.createElement("div");
   labyrinthContainer.style.width = "100%";
@@ -10896,7 +11688,6 @@ function setupPlanet5Puzzle5() {
   labyrinthContainer.style.position = "relative";
   labyrinthContainer.style.overflow = "hidden";
   labyrinthContainer.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
-  labyrinthContainer.style.top = "-50px"; // Labirenti yukarı taşıdık
   gameArea.appendChild(labyrinthContainer);
 
   // Labirent arka plan deseni
@@ -10910,515 +11701,735 @@ function setupPlanet5Puzzle5() {
   backgroundPattern.style.zIndex = "1";
   labyrinthContainer.appendChild(backgroundPattern);
 
-  // Labirent yolları
-  let paths = [
-    // Yatay yollar (x1, y1, x2, y2, karar noktası mı?)
-    {x1: 10, y1: 15, x2: 90, y2: 15, isDecisionPoint: false},
-    {x1: 10, y1: 35, x2: 30, y2: 35, isDecisionPoint: false},
-    {x1: 50, y1: 35, x2: 90, y2: 35, isDecisionPoint: false},
-    {x1: 10, y1: 55, x2: 70, y2: 55, isDecisionPoint: false},
-    {x1: 30, y1: 75, x2: 90, y2: 75, isDecisionPoint: false},
-    {x1: 10, y1: 85, x2: 50, y2: 85, isDecisionPoint: false},
-    
-    // Dikey yollar
-    {x1: 10, y1: 15, x2: 10, y2: 85, isDecisionPoint: false},
-    {x1: 30, y1: 35, x2: 30, y2: 75, isDecisionPoint: false},
-    {x1: 50, y1: 35, x2: 50, y2: 85, isDecisionPoint: false},
-    {x1: 70, y1: 55, x2: 70, y2: 75, isDecisionPoint: false},
-    {x1: 90, y1: 15, x2: 90, y2: 75, isDecisionPoint: false}
-  ];
-
-  // Labirent yollarını çiz
-  paths.forEach(path => {
-    let pathElement = document.createElement("div");
-    pathElement.style.position = "absolute";
-    if (path.x1 === path.x2) {
-      // Dikey yol
-      pathElement.style.width = "6%";
-      pathElement.style.height = `${path.y2 - path.y1}%`;
-      pathElement.style.left = `${path.x1 - 3}%`;
-      pathElement.style.top = `${path.y1}%`;
-    } else {
-      // Yatay yol
-      pathElement.style.width = `${path.x2 - path.x1}%`;
-      pathElement.style.height = "6%";
-      pathElement.style.left = `${path.x1}%`;
-      pathElement.style.top = `${path.y1 - 3}%`;
-    }
-    pathElement.style.backgroundColor = "#d9edf7";
-    pathElement.style.borderRadius = "3px";
-    pathElement.style.border = "1px solid #9b59b6";
-    pathElement.style.zIndex = "2";
-    labyrinthContainer.appendChild(pathElement);
-  });
-
-  // Karar noktaları
-  let decisionPoints = [
-    {x: 10, y: 35, id: 1},
-    {x: 30, y: 55, id: 2},
-    {x: 50, y: 55, id: 3},
-    {x: 70, y: 75, id: 4},
-    {x: 50, y: 85, id: 5}
-  ];
-
-  // Senaryolar ve seçenekler
-  const scenarios = [
-    {
-      id: 1,
-      question: "Bir oyun sitesine üye olurken hangi bilgiyi vermelisin?",
-      options: [
-        { text: "Gerçek adını ve okul adını", correct: false },
-        { text: "Sadece kullanıcı adı (nickname)", correct: true },
-        { text: "Adını, yaşını ve ev adresini", correct: false }
-      ]
-    },
-    {
-      id: 2,
-      question: "Arkadaşının fotoğrafını sosyal medyada paylaşmak istiyorsun. Ne yapmalısın?",
-      options: [
-        { text: "İzin almadan paylaş", correct: false },
-        { text: "Arkadaşından izin alıp öyle paylaş", correct: true },
-        { text: "Fotoğrafı kesip sadece kendini paylaş", correct: false }
-      ]
-    },
-    {
-      id: 3,
-      question: "İnternette tanıştığın biri doğum gününü soruyor. Ne yapmalısın?",
-      options: [
-        { text: "Hiçbir bilgi verme", correct: true },
-        { text: "Doğum gününü ve yaşını söyle", correct: false },
-        { text: "Doğum günü hediyesi için adresini ver", correct: false }
-      ]
-    },
-    {
-      id: 4,
-      question: "Bir anket sitesi bazı sorular soruyor. Hangisini yanıtlayabilirsin?",
-      options: [
-        { text: "Aile üyelerinin isimlerini", correct: false },
-        { text: "Evcil hayvanının olup olmadığını", correct: true },
-        { text: "Anne-babanın mesleğini", correct: false }
-      ]
-    },
-    {
-      id: 5,
-      question: "Ödevini yapmak için internet araştırması yapıyorsun. Bir site senden bilgi istiyor. Ne yapmalısın?",
-      options: [
-        { text: "İstediği tüm bilgileri ver", correct: false },
-        { text: "Başka bir kaynağa bak", correct: true },
-        { text: "E-posta adresini ve telefon numaranı paylaş", correct: false }
-      ]
-    }
-  ];
-
-  // Karar noktalarını oluştur
-  decisionPoints.forEach(point => {
-    let decisionPoint = document.createElement("div");
-    decisionPoint.className = "decision-point";
-    decisionPoint.dataset.id = point.id;
-    decisionPoint.style.position = "absolute";
-    decisionPoint.style.width = "10%";
-    decisionPoint.style.height = "10%";
-    decisionPoint.style.left = `${point.x - 5}%`;
-    decisionPoint.style.top = `${point.y - 5}%`;
-    decisionPoint.style.backgroundColor = "#9b59b6";
-    decisionPoint.style.borderRadius = "50%";
-    decisionPoint.style.display = "flex";
-    decisionPoint.style.justifyContent = "center";
-    decisionPoint.style.alignItems = "center";
-    decisionPoint.style.color = "white";
-    decisionPoint.style.fontWeight = "bold";
-    decisionPoint.style.fontSize = "1.2em";
-    decisionPoint.style.cursor = "pointer";
-    decisionPoint.style.zIndex = "3";
-    decisionPoint.style.boxShadow = "0 0 0 3px white";
-    decisionPoint.innerText = point.id;
-    
-    // Karar noktası tıklama olayı
-    decisionPoint.addEventListener("click", function() {
-      // Önce karakteri bu noktaya hareket ettir
-      gameState.moveCharacter(point.id);
-      
-      // Sonra senaryoyu göster
-      setTimeout(() => {
-        showScenario(point.id);
-      }, 600); // Hareket animasyonu bittikten sonra
-    });
-    
-    labyrinthContainer.appendChild(decisionPoint);
-  });
-
-  // Başlangıç ve bitiş noktaları
-  let startPoint = document.createElement("div");
-  startPoint.style.position = "absolute";
-  startPoint.style.width = "12%";
-  startPoint.style.height = "12%";
-  startPoint.style.left = "4%";
-  startPoint.style.top = "9%";
-  startPoint.style.backgroundColor = "#2ecc71";
-  startPoint.style.borderRadius = "50%";
-  startPoint.style.display = "flex";
-  startPoint.style.justifyContent = "center";
-  startPoint.style.alignItems = "center";
-  startPoint.style.color = "white";
-  startPoint.style.fontWeight = "bold";
-  startPoint.style.zIndex = "3";
-  startPoint.style.boxShadow = "0 0 0 3px white";
-  startPoint.innerHTML = "BAŞLA";
-  labyrinthContainer.appendChild(startPoint);
-  
-  let endPoint = document.createElement("div");
-  endPoint.style.position = "absolute";
-  endPoint.style.width = "12%";
-  endPoint.style.height = "12%";
-  endPoint.style.right = "4%";
-  endPoint.style.bottom = "9%";
-  endPoint.style.backgroundColor = "#e74c3c";
-  endPoint.style.borderRadius = "50%";
-  endPoint.style.display = "flex";
-  endPoint.style.justifyContent = "center";
-  endPoint.style.alignItems = "center";
-  endPoint.style.color = "white";
-  endPoint.style.fontWeight = "bold";
-  endPoint.style.zIndex = "3";
-  endPoint.style.boxShadow = "0 0 0 3px white";
-  endPoint.innerHTML = "BİTİŞ";
-  
-  // Bitiş noktasına tıklama olayı
-  endPoint.addEventListener("click", function() {
-    if (gameState.solvedDecisions.length === 5) { // Tüm kararlar çözüldüyse
-      gameState.moveCharacter(6); // Bitiş noktasına hareket et
-      setTimeout(() => {
-        showCompletionScreen();
-      }, 1000);
-    }
-  });
-  
-  labyrinthContainer.appendChild(endPoint);
-  
-  // Oyuncu karakteri
-  let character = document.createElement("div");
-  character.style.position = "absolute";
-  character.style.width = "8%";
-  character.style.height = "8%";
-  character.style.left = "6%";
-  character.style.top = "11%";
-  character.style.borderRadius = "50%";
-  character.style.backgroundColor = "#3498db";
-  character.style.zIndex = "4";
-  character.style.display = "flex";
-  character.style.justifyContent = "center";
-  character.style.alignItems = "center";
-  character.style.transition = "all 0.5s ease";
-  character.style.boxShadow = "0 0 0 2px white, 0 0 10px rgba(0, 0, 0, 0.3)";
-  character.innerHTML = "🧒";
-  character.style.fontSize = "1.2em";
-  labyrinthContainer.appendChild(character);
-  
   // Oyun durumu
   const gameState = {
     currentPosition: 0,
+    currentLocationId: 0, // 0: başlangıç, 1-5: soru noktaları, 6: bitiş
     correctAnswers: 0,
     solvedDecisions: [],
+    availablePoints: [0], // Başlangıçta sadece başlangıç noktası erişilebilir
+    animatingMove: false, // Hareket animasyonu devam ediyor mu?
     
     // Karakteri hareket ettir
-    moveCharacter: function(position) {
-      // Karakter konumlarını tanımla (id => x, y)
-      const positions = {
-        0: {x: 6, y: 11},    // Başlangıç
-        1: {x: 6, y: 31},    // 1. soru
-        2: {x: 26, y: 51},   // 2. soru
-        3: {x: 46, y: 51},   // 3. soru
-        4: {x: 66, y: 71},   // 4. soru
-        5: {x: 46, y: 81},   // 5. soru
-        6: {x: 84, y: 71}    // Bitiş
-      };
-
-      if (positions[position]) {
-        const {x, y} = positions[position];
-        character.style.left = `${x}%`;
-        character.style.top = `${y}%`;
+    moveCharacter: function(position, locationId, callback) {
+      if (this.animatingMove) return; // Hareket devam ediyorsa bir şey yapma
+      
+      this.animatingMove = true;
+      moveCharacterAlongPath(position, locationId, () => {
         this.currentPosition = position;
+        this.currentLocationId = locationId;
+        this.animatingMove = false;
         
         // İlerleme metnini güncelle
-        progress.innerHTML = `İlerleme: ${position > 5 ? 5 : position}/5`;
+        if (locationId >= 0 && locationId <= 5) {
+          progress.innerHTML = `İlerleme: ${locationId}/5`;
+        }
+        
+        if (callback) callback();
+      });
+    },
+    
+    // Karar noktasını çöz
+    solveDecisionPoint: function(id) {
+      this.solvedDecisions.push(id);
+      
+      // Sonraki karar noktasını aç
+      if (id < 5) {
+        this.availablePoints.push(id + 1);
+        
+        // Sonraki noktanın kullanılabilir olduğunu göster
+        updateDecisionPointsAppearance();
+        
+        // Kullanıcıya yönlendirme mesajı
+        instructionMessage.innerText = `${id+1}. soruya geç!`;
+      } else {
+        // Tüm sorular çözüldüyse bitiş noktasını aç
+        this.availablePoints.push(6); // 6, bitiş noktası ID'si
+        
+        // Kullanıcıya yönlendirme mesajı
+        instructionMessage.innerText = "Tüm soruları yanıtladın! Bitişe git.";
+        instructionMessage.style.backgroundColor = "rgba(46, 204, 113, 0.1)";
+        instructionMessage.style.border = "1px solid rgba(46, 204, 113, 0.3)";
+        instructionMessage.style.fontWeight = "bold";
       }
+    },
+    
+    // Noktaya erişilebilir mi?
+    isPointAvailable: function(id) {
+      return this.availablePoints.includes(id);
     }
   };
 
-  // Senaryo göster
-  function showScenario(id) {
-    // Eğer bu karar noktası zaten çözüldüyse, tekrar çözülmesine gerek yok
-    if (gameState.solvedDecisions.includes(id)) {
-      return;
-    }
-    
-    const scenario = scenarios.find(s => s.id === id);
-    if (!scenario) return;
-    
-    // Mevcut başlık
-    let currentScenarioId = id;
-    
-    // Senaryo modal
-    let scenarioModal = document.createElement("div");
-    scenarioModal.style.position = "absolute";
-    scenarioModal.style.width = "90%";
-    scenarioModal.style.maxWidth = "400px";
-    scenarioModal.style.backgroundColor = "white";
-    scenarioModal.style.borderRadius = "12px";
-    scenarioModal.style.padding = "20px";
-    scenarioModal.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.3)";
-    scenarioModal.style.zIndex = "10";
-    scenarioModal.style.top = "50%";
-    scenarioModal.style.left = "50%";
-    scenarioModal.style.transform = "translate(-50%, -50%)";
-    scenarioModal.style.display = "flex";
-    scenarioModal.style.flexDirection = "column";
-    scenarioModal.style.gap = "15px";
-    
-    // Arka plan kapatıcı
-    let modalOverlay = document.createElement("div");
-    modalOverlay.style.position = "fixed";
-    modalOverlay.style.top = "0";
-    modalOverlay.style.left = "0";
-    modalOverlay.style.width = "100%";
-    modalOverlay.style.height = "100%";
-    modalOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    modalOverlay.style.zIndex = "5";
-    
-    // Soru metni
-    let questionText = document.createElement("div");
-    questionText.style.fontSize = "1.1em";
-    questionText.style.fontWeight = "bold";
-    questionText.style.color = "#000000";
-    questionText.style.textAlign = "center";
-    questionText.style.marginBottom = "10px";
-    questionText.innerText = scenario.question;
-    scenarioModal.appendChild(questionText);
-    
-    // Seçenekler
-    scenario.options.forEach((option, index) => {
-      let optionButton = document.createElement("button");
-      optionButton.style.padding = "10px 15px";
-      optionButton.style.backgroundColor = "#f8f9fa";
-      optionButton.style.border = "1px solid #ced4da";
-      optionButton.style.borderRadius = "8px";
-      optionButton.style.fontSize = "0.9em";
-      optionButton.style.textAlign = "left";
-      optionButton.style.cursor = "pointer";
-      optionButton.style.transition = "all 0.2s";
-      optionButton.style.color = "#000000"; // Yazı rengi siyah
-      optionButton.innerText = option.text;
-      
-      optionButton.addEventListener("mouseenter", function() {
-        this.style.backgroundColor = "#e9ecef";
-      });
-      
-      optionButton.addEventListener("mouseleave", function() {
-        this.style.backgroundColor = "#f8f9fa";
-      });
-      
-      optionButton.addEventListener("click", function() {
-        // Tüm butonları devre dışı bırak
-        scenarioModal.querySelectorAll("button").forEach(btn => {
-          btn.disabled = true;
-          btn.style.cursor = "default";
-        });
-        
-        // Seçeneği doğru/yanlış olarak işaretle
-        if (option.correct) {
-          optionButton.style.backgroundColor = "#d4edda";
-          optionButton.style.borderColor = "#c3e6cb";
-          optionButton.style.color = "#155724";
-          
-          // Doğru cevap sayısını artır
-          gameState.correctAnswers++;
-          correctDecisions.innerHTML = `Doğru Kararlar: ${gameState.correctAnswers}`;
-          
-          // Doğru cevap açıklaması
-          let feedbackText = document.createElement("div");
-          feedbackText.style.marginTop = "15px";
-          feedbackText.style.padding = "10px";
-          feedbackText.style.backgroundColor = "#d4edda";
-          feedbackText.style.borderRadius = "5px";
-          feedbackText.style.color = "#000000"; // Yazı rengi siyah
-          feedbackText.style.fontSize = "0.9em";
-          feedbackText.innerHTML = `<strong>Doğru karar!</strong> Kişisel verilerin güvenliğini sağlayarak doğru bir seçim yaptın.`;
-          scenarioModal.appendChild(feedbackText);
-          
-          // Karakter biraz sevinç göstersin
-          character.style.transform = "translateY(-10px)";
-          setTimeout(() => {
-            character.style.transform = "translateY(0)";
-          }, 300);
-          
-          playCorrectSound();
-          
-          // Kararı çözüldü olarak işaretle
-          gameState.solvedDecisions.push(currentScenarioId);
-          
-          // Karar noktasını yeşile boyayalım
-          let decisionPoint = document.querySelector(`.decision-point[data-id="${currentScenarioId}"]`);
-          decisionPoint.style.backgroundColor = "#2ecc71";
-          
-          // Modalı 2 saniye sonra kapat
-          setTimeout(() => {
-            modalOverlay.remove();
-            scenarioModal.remove();
-          }, 2000);
-          
-        } else {
-          optionButton.style.backgroundColor = "#f8d7da";
-          optionButton.style.borderColor = "#f5c6cb";
-          optionButton.style.color = "#721c24";
-          
-          // Yanlış cevap açıklaması
-          let feedbackText = document.createElement("div");
-          feedbackText.style.marginTop = "15px";
-          feedbackText.style.padding = "10px";
-          feedbackText.style.backgroundColor = "#f8d7da";
-          feedbackText.style.borderRadius = "5px";
-          feedbackText.style.color = "#000000"; // Yazı rengi siyah
-          feedbackText.style.fontSize = "0.9em";
-          feedbackText.innerHTML = `<strong>Dikkat!</strong> Bu yanıt kişisel verileri riske atabilir. Tekrar düşünmelisin.`;
-          scenarioModal.appendChild(feedbackText);
-          
-          // Tekrar dene butonu
-          let retryButton = document.createElement("button");
-          retryButton.style.marginTop = "10px";
-          retryButton.style.padding = "8px 15px";
-          retryButton.style.backgroundColor = "#6c757d";
-          retryButton.style.color = "white";
-          retryButton.style.border = "none";
-          retryButton.style.borderRadius = "5px";
-          retryButton.style.cursor = "pointer";
-          retryButton.innerText = "Tekrar Dene";
-          
-          retryButton.addEventListener("mouseenter", function() {
-            this.style.backgroundColor = "#5a6268";
-          });
-          
-          retryButton.addEventListener("mouseleave", function() {
-            this.style.backgroundColor = "#6c757d";
-          });
-          
-          retryButton.addEventListener("click", function() {
-            modalOverlay.remove();
-            scenarioModal.remove();
-            showScenario(currentScenarioId);
-          });
-          
-          scenarioModal.appendChild(retryButton);
-          
-          playWrongSound();
-        }
-      });
-      
-      scenarioModal.appendChild(optionButton);
-    });
-    
-    // Modal ve overlay'ı ekle
-    mainContainer.appendChild(modalOverlay);
-    mainContainer.appendChild(scenarioModal);
-  }
+  // ---- LABIRENT YAPISI IYILEŞTIRMESI ----
+  
+  // Düzeltilmiş labirent yolları
+  const paths = [
+    // Labirent yolları: başlangıç, bitiş, genişlik (yatay için) veya yükseklik (dikey için), yatay mı?
+    {start: {x: 10, y: 15}, length: 80, isHorizontal: true}, // Üst yatay ana yol
+    {start: {x: 10, y: 15}, length: 70, isHorizontal: false}, // Sol dikey ana yol
+    {start: {x: 10, y: 35}, length: 20, isHorizontal: true}, // 1. noktadan sağa
+    {start: {x: 30, y: 35}, length: 20, isHorizontal: false}, // 2. noktaya giden dikey
+    {start: {x: 30, y: 55}, length: 20, isHorizontal: true}, // 2. noktadan 3. noktaya
+    {start: {x: 50, y: 35}, length: 40, isHorizontal: true}, // 3. üst yatay bağlantı
+    {start: {x: 50, y: 35}, length: 50, isHorizontal: false}, // 3. dikey bağlantı
+    {start: {x: 70, y: 55}, length: 20, isHorizontal: false}, // 4. noktaya dikey
+    {start: {x: 50, y: 55}, length: 20, isHorizontal: true}, // 3. noktadan sağa
+    {start: {x: 70, y: 75}, length: 20, isHorizontal: true}, // 4. noktadan bitiş noktasına
+    {start: {x: 90, y: 15}, length: 60, isHorizontal: false}, // Sağ dikey ana yol
+    {start: {x: 10, y: 85}, length: 40, isHorizontal: true}  // Alt yatay ana yol
+  ];
 
-  // Tamamlama ekranı
-  function showCompletionScreen() {
-    // Mevcut içeriği temizle
-    mainContainer.innerHTML = "";
-    
-    // Tamamlama kartı
-    let completionCard = document.createElement("div");
-    completionCard.style.width = "90%";
-    completionCard.style.maxWidth = "600px";
-    completionCard.style.backgroundColor = "white";
-    completionCard.style.borderRadius = "12px";
-    completionCard.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.1)";
-    completionCard.style.padding = "25px";
-    completionCard.style.display = "flex";
-    completionCard.style.flexDirection = "column";
-    completionCard.style.alignItems = "center";
-    completionCard.style.gap = "20px";
-    completionCard.style.position = "relative";
-    completionCard.style.overflow = "hidden";
-    mainContainer.appendChild(completionCard);
-    
-    // Sertifika görünümü
-    let certificate = document.createElement("div");
-    certificate.style.width = "100%";
-    certificate.style.padding = "20px";
-    certificate.style.border = "2px solid #9b59b6";
-    certificate.style.borderRadius = "10px";
-    certificate.style.backgroundColor = "#f9f9f9";
-    certificate.style.textAlign = "center";
-    certificate.style.marginBottom = "20px";
-    
-    // Sertifika içeriği
-    certificate.innerHTML = `
-      <h3 style="color: #000000; margin-bottom: 10px;">🏆 Veri Koruma Sertifikası 🏆</h3>
-      <p style="color: #000000; margin-bottom: 15px;">Veri Gizliliği Labirentini başarıyla tamamladın!</p>
-      <p style="color: #000000; margin-bottom: 5px;"><strong>Doğru Karar Sayısı:</strong> ${gameState.correctAnswers}/5</p>
-    `;
-    completionCard.appendChild(certificate);
-    
-    // Tebrikler mesajı
-    let congratsMessage = document.createElement("div");
-    congratsMessage.style.textAlign = "center";
-    congratsMessage.style.marginBottom = "20px";
-    congratsMessage.style.color = "#000000";
-    
-    // Kazanılan beceriler
-    congratsMessage.innerHTML = `
-      <h3>Tebrikler! 🎉</h3>
-      <p>Veri gizliliği konusunda önemli beceriler kazandın:</p>
-      <ul style="text-align: left; padding-left: 20px;">
-        <li>Kişisel verilerin korunmasının önemini öğrendin</li>
-        <li>Hangi bilgilerin paylaşılabilir olduğunu anladın</li>
-        <li>Çevrimiçi güvenliğin temel prensiplerini kavradın</li>
-      </ul>
-    `;
-    completionCard.appendChild(congratsMessage);
-    
-    // Konfeti efekti
-    addConfetti();
-    
-    // Sonraki bulmacaya otomatik geçiş
-    setTimeout(() => {
-      goNextPuzzle();
-    }, 5000);
+  // Düğüm noktaları (Decision Points)
+  const nodes = [
+    {id: 0, x: 10, y: 15, type: "start", accessible: true},  // Başlangıç
+    {id: 1, x: 10, y: 35, type: "decision"},                // Karar 1
+    {id: 2, x: 30, y: 55, type: "decision"},                // Karar 2
+    {id: 3, x: 50, y: 55, type: "decision"},                // Karar 3
+    {id: 4, x: 70, y: 75, type: "decision"},                // Karar 4
+    {id: 5, x: 50, y: 85, type: "decision"},                // Karar 5
+    {id: 6, x: 90, y: 75, type: "end"}                      // Bitiş
+  ];
+  
+  // Labirent yollarını çiz - daha düzgün kenarlar için
+  function drawLabyrinthPaths() {
+    paths.forEach(path => {
+      let pathElement = document.createElement("div");
+      pathElement.className = "labyrinth-path";
+      pathElement.style.position = "absolute";
+      
+      if (path.isHorizontal) {
+        // Yatay yol
+        pathElement.style.width = `${path.length}%`;
+        pathElement.style.height = "6%";
+        pathElement.style.left = `${path.start.x}%`;
+        pathElement.style.top = `${path.start.y - 3}%`;
+      } else {
+        // Dikey yol
+        pathElement.style.width = "6%";
+        pathElement.style.height = `${path.length}%`;
+        pathElement.style.left = `${path.start.x - 3}%`;
+        pathElement.style.top = `${path.start.y}%`;
+      }
+      
+      pathElement.style.backgroundColor = "#d9edf7";
+      pathElement.style.borderRadius = "3px";
+      pathElement.style.border = "1px solid #9b59b6";
+      pathElement.style.zIndex = "2";
+      labyrinthContainer.appendChild(pathElement);
+    });
   }
   
-  // Konfeti efekti
-  function addConfetti() {
-    for (let i = 0; i < 100; i++) {
-      let confetti = document.createElement("div");
-      confetti.style.position = "absolute";
-      confetti.style.width = Math.random() * 10 + 5 + "px";
-      confetti.style.height = Math.random() * 5 + 10 + "px";
-      confetti.style.backgroundColor = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#1abc9c"][Math.floor(Math.random() * 6)];
-      confetti.style.borderRadius = "2px";
-      confetti.style.top = "-10px";
-      confetti.style.left = Math.random() * 100 + "%";
-      confetti.style.transform = "rotate(" + Math.random() * 360 + "deg)";
-      confetti.style.opacity = Math.random() * 0.5 + 0.5;
-      confetti.style.animation = "confetti-fall 3s linear forwards";
-      mainContainer.appendChild(confetti);
-    }
+  // Köşe noktalarını oluştur (yolların birleşim noktaları için)
+  function createCornerPoints() {
+    // Köşe noktaları için düzgün yuvarlak kaplamalar ekle
+    const cornerPoints = [
+      {x: 10, y: 35}, {x: 10, y: 85}, 
+      {x: 30, y: 35}, {x: 30, y: 55}, 
+      {x: 50, y: 35}, {x: 50, y: 55}, {x: 50, y: 85},
+      {x: 70, y: 55}, {x: 70, y: 75},
+      {x: 90, y: 15}, {x: 90, y: 75}
+    ];
     
-    // Konfeti animasyonu stil
-    let style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes confetti-fall {
-        0% {
-          transform: translateY(-10px) rotate(0deg) scale(1);
-        }
-        100% {
-          transform: translateY(500px) rotate(360deg) scale(0);
+    cornerPoints.forEach(point => {
+      let corner = document.createElement("div");
+      corner.className = "corner-point";
+      corner.style.position = "absolute";
+      corner.style.width = "8%";
+      corner.style.height = "8%";
+      corner.style.left = `${point.x - 4}%`;
+      corner.style.top = `${point.y - 4}%`;
+      corner.style.backgroundColor = "#d9edf7";
+      corner.style.borderRadius = "50%";
+      corner.style.border = "1px solid #9b59b6";
+      corner.style.zIndex = "2";
+      labyrinthContainer.appendChild(corner);
+    });
+  }
+  
+  // Karar noktalarını oluştur
+  function createDecisionPoints() {
+    nodes.forEach(node => {
+      let nodeElement = document.createElement("div");
+      nodeElement.className = node.type === "decision" ? "decision-point" : node.type === "start" ? "start-point" : "end-point";
+      nodeElement.dataset.id = node.id;
+      nodeElement.style.position = "absolute";
+      nodeElement.style.width = node.type === "decision" ? "10%" : "12%";
+      nodeElement.style.height = node.type === "decision" ? "10%" : "12%";
+      nodeElement.style.left = `${node.x - (node.type === "decision" ? 5 : 6)}%`;
+      nodeElement.style.top = `${node.y - (node.type === "decision" ? 5 : 6)}%`;
+      
+      // Başlangıç, bitiş ve karar noktaları için farklı renkler
+      if (node.type === "start") {
+        nodeElement.style.backgroundColor = "#2ecc71"; // Yeşil
+        nodeElement.innerHTML = "BAŞLA";
+      } else if (node.type === "end") {
+        nodeElement.style.backgroundColor = "#e74c3c"; // Kırmızı
+        nodeElement.innerHTML = "BİTİŞ";
+        nodeElement.style.opacity = "0.5"; // Başlangıçta soluk (ulaşılamaz)
+      } else {
+        nodeElement.style.backgroundColor = "#9b59b6"; // Mor
+        nodeElement.innerHTML = node.id;
+        
+        // Başlangıçta sadece ilk karar noktası erişilebilir
+        if (node.id !== 1) {
+          nodeElement.style.opacity = "0.5"; // Henüz ulaşılamaz nokta
         }
       }
-    `;
-    document.head.appendChild(style);
+      
+      nodeElement.style.borderRadius = "50%";
+      nodeElement.style.display = "flex";
+      nodeElement.style.justifyContent = "center";
+      nodeElement.style.alignItems = "center";
+      nodeElement.style.color = "white";
+      nodeElement.style.fontWeight = "bold";
+      nodeElement.style.fontSize = node.type === "decision" ? "1.2em" : "0.9em";
+      nodeElement.style.cursor = "pointer";
+      nodeElement.style.zIndex = "3";
+      nodeElement.style.boxShadow = "0 0 0 3px white";
+      
+      // Tıklama olayı
+      nodeElement.addEventListener("click", function() {
+        const nodeId = parseInt(this.dataset.id);
+        
+        // Erişilebilir nokta değilse, işlemi engelle
+        if (!gameState.isPointAvailable(nodeId)) {
+          playWrongSound();
+          instructionMessage.innerText = nodeId < gameState.currentLocationId ? 
+            "Bu soruyu zaten cevapladın!" : 
+            "Önce önceki soruları cevaplamalısın!";
+          instructionMessage.style.backgroundColor = "rgba(231, 76, 60, 0.1)";
+          instructionMessage.style.border = "1px solid rgba(231, 76, 60, 0.3)";
+          
+          setTimeout(() => {
+            instructionMessage.style.backgroundColor = "rgba(52, 152, 219, 0.1)";
+            instructionMessage.style.border = "1px solid rgba(52, 152, 219, 0.3)";
+            
+            // Geçerli duruma göre mesajı güncelle
+            if (gameState.solvedDecisions.length === 5) {
+              instructionMessage.innerText = "Tüm soruları yanıtladın! Bitişe git.";
+              instructionMessage.style.backgroundColor = "rgba(46, 204, 113, 0.1)";
+              instructionMessage.style.border = "1px solid rgba(46, 204, 113, 0.3)";
+            } else if (gameState.solvedDecisions.length === 0) {
+              instructionMessage.innerText = "Başlamak için 1. soruya git!";
+            } else {
+              instructionMessage.innerText = `${gameState.solvedDecisions.length + 1}. soruya geç!`;
+            }
+          }, 2000);
+          
+          return;
+        }
+        
+        // Başlangıç noktasına tıklanırsa
+        if (nodeId === 0) {
+          // Eğer hala başlangıçtaysak ve 1. karar noktası açıksa, yönlendirme mesajı
+          if (gameState.currentLocationId === 0) {
+            instructionMessage.innerText = "1. soruya gitmek için 1 numaralı noktaya tıkla!";
+            return;
+          }
+        }
+        
+        // Bitiş noktasına tıklanırsa
+        if (nodeId === 6) {
+          if (gameState.solvedDecisions.length === 5) {
+            // Tüm kararlar çözüldüyse bitiş noktasına hareket et
+            gameState.moveCharacter({x: 90, y: 75}, 6, () => {
+              setTimeout(showCompletionScreen, 1000);
+            });
+          }
+          return;
+        }
+        
+        // Karar noktasına tıklanırsa
+        if (nodeId >= 1 && nodeId <= 5) {
+          const targetPosition = {x: nodes[nodeId].x, y: nodes[nodeId].y};
+          
+          // Önce karakteri bu noktaya hareket ettir
+          gameState.moveCharacter(targetPosition, nodeId, () => {
+            // Sonra senaryoyu göster
+            setTimeout(() => {
+              showScenario(nodeId);
+            }, 200);
+          });
+        }
+      });
+      
+      labyrinthContainer.appendChild(nodeElement);
+    });
   }
-}
+  
+  // Karar noktalarının görünümünü güncelle
+  function updateDecisionPointsAppearance() {
+    document.querySelectorAll(".decision-point, .end-point").forEach(point => {
+      const pointId = parseInt(point.dataset.id);
+      
+      // Çözülen karar noktaları
+      if (gameState.solvedDecisions.includes(pointId)) {
+        point.style.backgroundColor = "#2ecc71"; // Yeşil (tamamlandı)
+        point.style.opacity = "1";
+      } 
+      // Erişilebilir karar noktaları
+      else if (gameState.availablePoints.includes(pointId)) {
+        point.style.opacity = "1"; // Tam görünür
+      } 
+      // Henüz erişilemeyen noktalar
+      else {
+        point.style.opacity = "0.5"; // Soluk
+      }
+    });
+  }
+
+    // Oyuncu karakteri
+    let character = document.createElement("div");
+    character.style.position = "absolute";
+    character.style.width = "8%";
+    character.style.height = "8%";
+    character.style.left = "6%";
+    character.style.top = "11%";
+    character.style.borderRadius = "50%";
+    character.style.backgroundColor = "#3498db";
+    character.style.zIndex = "5"; // Labirent yollarının üzerinde
+    character.style.display = "flex";
+    character.style.justifyContent = "center";
+    character.style.alignItems = "center";
+    character.style.transition = "all 0.3s ease"; // Daha hızlı ve yumuşak geçiş
+    character.style.boxShadow = "0 0 0 2px white, 0 0 10px rgba(0, 0, 0, 0.3)";
+    character.innerHTML = "🧒";
+    character.style.fontSize = "1.2em";
+    labyrinthContainer.appendChild(character);
+    
+    // Labirenti çiz
+    drawLabyrinthPaths();
+    createCornerPoints();
+    createDecisionPoints();
+  
+    // Senaryolar ve seçenekler
+    const scenarios = [
+      {
+        id: 1,
+        question: "Bir oyun sitesine üye olurken hangi bilgiyi vermelisin?",
+        options: [
+          { text: "Gerçek adını ve okul adını", correct: false },
+          { text: "Sadece kullanıcı adı (nickname)", correct: true },
+          { text: "Adını, yaşını ve ev adresini", correct: false }
+        ]
+      },
+      {
+        id: 2,
+        question: "Arkadaşının fotoğrafını sosyal medyada paylaşmak istiyorsun. Ne yapmalısın?",
+        options: [
+          { text: "İzin almadan paylaş", correct: false },
+          { text: "Arkadaşından izin alıp öyle paylaş", correct: true },
+          { text: "Fotoğrafı kesip sadece kendini paylaş", correct: false }
+        ]
+      },
+      {
+        id: 3,
+        question: "İnternette tanıştığın biri doğum gününü soruyor. Ne yapmalısın?",
+        options: [
+          { text: "Hiçbir bilgi verme", correct: true },
+          { text: "Doğum gününü ve yaşını söyle", correct: false },
+          { text: "Doğum günü hediyesi için adresini ver", correct: false }
+        ]
+      },
+      {
+        id: 4,
+        question: "Bir anket sitesi bazı sorular soruyor. Hangisini yanıtlayabilirsin?",
+        options: [
+          { text: "Aile üyelerinin isimlerini", correct: false },
+          { text: "Evcil hayvanınızın olup olmadığını", correct: true },
+          { text: "Anne-babanın mesleğini", correct: false }
+        ]
+      },
+      {
+        id: 5,
+        question: "Ödevini yapmak için internet araştırması yapıyorsun. Bir site senden bilgi istiyor. Ne yapmalısın?",
+        options: [
+          { text: "İstediği tüm bilgileri ver", correct: false },
+          { text: "Başka bir kaynağa bak", correct: true },
+          { text: "E-posta adresini ve telefon numaranı paylaş", correct: false }
+        ]
+      }
+    ];
+    
+    // Labirent yolunu takip ederek karakteri hareket ettir
+    function moveCharacterAlongPath(targetPosition, targetId, callback) {
+      // Başlangıç ve bitiş konumları
+      const startLocationId = gameState.currentLocationId;
+      const startNode = nodes[startLocationId];
+      const endNode = nodes[targetId];
+      
+      const startPosition = {x: startNode.x, y: startNode.y};
+      
+      // Hareket yolu - düğümler arası geçiş noktalarını içerir
+      let movePath = [];
+      
+      // Yol haritası - labirentte hangi noktalardan geçmeli
+      // Bu basit bir labirent olduğu için manuel olarak yol haritasını tanımlıyoruz
+      // Daha karmaşık labirentler için otomatik yol bulma algoritması kullanılabilir
+      const pathMap = {
+        "0-1": [{x: 10, y: 15}, {x: 10, y: 35}], // Başlangıçtan 1. noktaya
+        "1-2": [{x: 10, y: 35}, {x: 30, y: 35}, {x: 30, y: 55}], // 1'den 2'ye
+        "2-3": [{x: 30, y: 55}, {x: 50, y: 55}], // 2'den 3'e
+        "3-4": [{x: 50, y: 55}, {x: 70, y: 55}, {x: 70, y: 75}], // 3'ten 4'e
+        "4-5": [{x: 70, y: 75}, {x: 50, y: 75}, {x: 50, y: 85}], // 4'ten 5'e
+        "5-6": [{x: 50, y: 85}, {x: 90, y: 85}, {x: 90, y: 75}], // 5'ten bitişe
+        "0-2": [{x: 10, y: 15}, {x: 10, y: 35}, {x: 30, y: 35}, {x: 30, y: 55}], // Başlangıçtan 2'ye
+        "0-3": [{x: 10, y: 15}, {x: 10, y: 35}, {x: 30, y: 35}, {x: 30, y: 55}, {x: 50, y: 55}], // Başlangıçtan 3'e
+        "0-4": [{x: 10, y: 15}, {x: 10, y: 35}, {x: 30, y: 35}, {x: 30, y: 55}, {x: 50, y: 55}, {x: 70, y: 55}, {x: 70, y: 75}], // Başlangıçtan 4'e
+        "0-5": [{x: 10, y: 15}, {x: 10, y: 35}, {x: 10, y: 85}, {x: 50, y: 85}], // Başlangıçtan 5'e
+        "0-6": [{x: 10, y: 15}, {x: 90, y: 15}, {x: 90, y: 75}], // Başlangıçtan bitişe
+        "1-3": [{x: 10, y: 35}, {x: 30, y: 35}, {x: 30, y: 55}, {x: 50, y: 55}], // 1'den 3'e
+        "1-4": [{x: 10, y: 35}, {x: 30, y: 35}, {x: 30, y: 55}, {x: 50, y: 55}, {x: 70, y: 55}, {x: 70, y: 75}], // 1'den 4'e
+        "1-5": [{x: 10, y: 35}, {x: 10, y: 85}, {x: 50, y: 85}], // 1'den 5'e
+        "1-6": [{x: 10, y: 35}, {x: 10, y: 85}, {x: 50, y: 85}, {x: 90, y: 85}, {x: 90, y: 75}], // 1'den bitişe
+        "2-4": [{x: 30, y: 55}, {x: 50, y: 55}, {x: 70, y: 55}, {x: 70, y: 75}], // 2'den 4'e
+        "2-5": [{x: 30, y: 55}, {x: 30, y: 75}, {x: 50, y: 75}, {x: 50, y: 85}], // 2'den 5'e
+        "2-6": [{x: 30, y: 55}, {x: 50, y: 55}, {x: 70, y: 55}, {x: 70, y: 75}, {x: 90, y: 75}], // 2'den bitişe
+        "3-5": [{x: 50, y: 55}, {x: 50, y: 85}], // 3'ten 5'e
+        "3-6": [{x: 50, y: 55}, {x: 70, y: 55}, {x: 70, y: 75}, {x: 90, y: 75}], // 3'ten bitişe
+        "4-6": [{x: 70, y: 75}, {x: 90, y: 75}] // 4'ten bitişe
+      };
+      
+      // Yol haritasından uygun yolu seç
+      const pathKey = `${startLocationId}-${targetId}`;
+      if (pathMap[pathKey]) {
+        movePath = pathMap[pathKey];
+      } else {
+        // Direkt gidiş yok, varsayılan olarak doğrudan hedef noktaya git
+        movePath = [targetPosition];
+      }
+      
+      // Her bir adım için animasyon süresi (ms)
+      const stepDuration = 300;
+      
+      // Yoldaki her bir noktaya sırayla hareket et
+      function moveToNextPoint(index) {
+        if (index < movePath.length) {
+          const nextPoint = movePath[index];
+          
+          // Karakteri hareket ettir
+          character.style.left = `${nextPoint.x - 4}%`; // Merkezi hizalama için offset
+          character.style.top = `${nextPoint.y - 4}%`;  // Merkezi hizalama için offset
+          
+          // Bir sonraki noktaya geç
+          setTimeout(() => {
+            moveToNextPoint(index + 1);
+          }, stepDuration);
+        } else {
+          // Tüm noktalar tamamlandı, callback'i çağır
+          if (callback) callback();
+        }
+      }
+      
+      // Hareketi başlat
+      moveToNextPoint(0);
+    }
+  
+    // Senaryo göster
+    function showScenario(id) {
+      // Eğer bu karar noktası zaten çözüldüyse, tekrar çözülmesine gerek yok
+      if (gameState.solvedDecisions.includes(id)) {
+        instructionMessage.innerText = "Bu soruyu zaten yanıtladın!";
+        return;
+      }
+      
+      const scenario = scenarios.find(s => s.id === id);
+      if (!scenario) return;
+      
+      // Mevcut başlık
+      let currentScenarioId = id;
+      
+      // Senaryo modal
+      let scenarioModal = document.createElement("div");
+      scenarioModal.style.position = "absolute";
+      scenarioModal.style.width = "90%";
+      scenarioModal.style.maxWidth = "400px";
+      scenarioModal.style.backgroundColor = "white";
+      scenarioModal.style.borderRadius = "12px";
+      scenarioModal.style.padding = "20px";
+      scenarioModal.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.3)";
+      scenarioModal.style.zIndex = "10";
+      scenarioModal.style.top = "50%";
+      scenarioModal.style.left = "50%";
+      scenarioModal.style.transform = "translate(-50%, -50%)";
+      scenarioModal.style.display = "flex";
+      scenarioModal.style.flexDirection = "column";
+      scenarioModal.style.gap = "15px";
+      
+      // Arka plan kapatıcı
+      let modalOverlay = document.createElement("div");
+      modalOverlay.style.position = "fixed";
+      modalOverlay.style.top = "0";
+      modalOverlay.style.left = "0";
+      modalOverlay.style.width = "100%";
+      modalOverlay.style.height = "100%";
+      modalOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+      modalOverlay.style.zIndex = "5";
+      
+      // Soru metni
+      let questionText = document.createElement("div");
+      questionText.style.fontSize = "1.1em";
+      questionText.style.fontWeight = "bold";
+      questionText.style.color = "#000000";
+      questionText.style.textAlign = "center";
+      questionText.style.marginBottom = "10px";
+      questionText.innerText = scenario.question;
+      scenarioModal.appendChild(questionText);
+      
+      // Seçenekler
+      scenario.options.forEach((option, index) => {
+        let optionButton = document.createElement("button");
+        optionButton.style.padding = "10px 15px";
+        optionButton.style.backgroundColor = "#f8f9fa";
+        optionButton.style.border = "1px solid #ced4da";
+        optionButton.style.borderRadius = "8px";
+        optionButton.style.fontSize = "0.9em";
+        optionButton.style.textAlign = "left";
+        optionButton.style.cursor = "pointer";
+        optionButton.style.transition = "all 0.2s";
+        optionButton.style.color = "#000000"; // Yazı rengi siyah
+        optionButton.innerText = option.text;
+        
+        optionButton.addEventListener("mouseenter", function() {
+          this.style.backgroundColor = "#e9ecef";
+        });
+        
+        optionButton.addEventListener("mouseleave", function() {
+          this.style.backgroundColor = "#f8f9fa";
+        });
+        
+        optionButton.addEventListener("click", function() {
+          // Tüm butonları devre dışı bırak
+          scenarioModal.querySelectorAll("button").forEach(btn => {
+            btn.disabled = true;
+            btn.style.cursor = "default";
+          });
+          
+          // Seçeneği doğru/yanlış olarak işaretle
+          if (option.correct) {
+            optionButton.style.backgroundColor = "#d4edda";
+            optionButton.style.borderColor = "#c3e6cb";
+            optionButton.style.color = "#155724";
+            
+            // Doğru cevap sayısını artır
+            gameState.correctAnswers++;
+            correctDecisions.innerHTML = `Doğru Kararlar: ${gameState.correctAnswers}`;
+            
+            // Doğru cevap açıklaması
+            let feedbackText = document.createElement("div");
+            feedbackText.style.marginTop = "15px";
+            feedbackText.style.padding = "10px";
+            feedbackText.style.backgroundColor = "#d4edda";
+            feedbackText.style.borderRadius = "5px";
+            feedbackText.style.color = "#000000"; // Yazı rengi siyah
+            feedbackText.style.fontSize = "0.9em";
+            feedbackText.innerHTML = `<strong>Doğru karar!</strong> Kişisel verilerin güvenliğini sağlayarak doğru bir seçim yaptın.`;
+            scenarioModal.appendChild(feedbackText);
+            
+            // Karakter biraz sevinç göstersin
+            character.style.transform = "translateY(-10px)";
+            setTimeout(() => {
+              character.style.transform = "translateY(0)";
+            }, 300);
+            
+            playCorrectSound();
+            
+            // Kararı çözüldü olarak işaretle
+            gameState.solveDecisionPoint(currentScenarioId);
+            
+            // Modalı 2 saniye sonra kapat
+            setTimeout(() => {
+              modalOverlay.remove();
+              scenarioModal.remove();
+            }, 2000);
+            
+          } else {
+            optionButton.style.backgroundColor = "#f8d7da";
+            optionButton.style.borderColor = "#f5c6cb";
+            optionButton.style.color = "#721c24";
+            
+            // Yanlış cevap açıklaması
+            let feedbackText = document.createElement("div");
+            feedbackText.style.marginTop = "15px";
+            feedbackText.style.padding = "10px";
+            feedbackText.style.backgroundColor = "#f8d7da";
+            feedbackText.style.borderRadius = "5px";
+            feedbackText.style.color = "#000000"; // Yazı rengi siyah
+            feedbackText.style.fontSize = "0.9em";
+            feedbackText.innerHTML = `<strong>Dikkat!</strong> Bu yanıt kişisel verileri riske atabilir. Tekrar düşünmelisin.`;
+            scenarioModal.appendChild(feedbackText);
+            
+            // Tekrar dene butonu
+            let retryButton = document.createElement("button");
+            retryButton.style.marginTop = "10px";
+            retryButton.style.padding = "8px 15px";
+            retryButton.style.backgroundColor = "#6c757d";
+            retryButton.style.color = "white";
+            retryButton.style.border = "none";
+            retryButton.style.borderRadius = "5px";
+            retryButton.style.cursor = "pointer";
+            retryButton.innerText = "Tekrar Dene";
+            
+            retryButton.addEventListener("mouseenter", function() {
+              this.style.backgroundColor = "#5a6268";
+            });
+            
+            retryButton.addEventListener("mouseleave", function() {
+              this.style.backgroundColor = "#6c757d";
+            });
+            
+            retryButton.addEventListener("click", function() {
+              modalOverlay.remove();
+              scenarioModal.remove();
+              showScenario(currentScenarioId);
+            });
+            
+            scenarioModal.appendChild(retryButton);
+            
+            playWrongSound();
+          }
+        });
+        
+        scenarioModal.appendChild(optionButton);
+      });
+      
+      // Modal ve overlay'ı ekle
+      mainContainer.appendChild(modalOverlay);
+      mainContainer.appendChild(scenarioModal);
+    }
+  
+    // Tamamlama ekranı
+    function showCompletionScreen() {
+      // Mevcut içeriği temizle
+      mainContainer.innerHTML = "";
+      
+      // Tamamlama kartı
+      let completionCard = document.createElement("div");
+      completionCard.style.width = "90%";
+      completionCard.style.maxWidth = "600px";
+      completionCard.style.backgroundColor = "white";
+      completionCard.style.borderRadius = "12px";
+      completionCard.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.1)";
+      completionCard.style.padding = "25px";
+      completionCard.style.display = "flex";
+      completionCard.style.flexDirection = "column";
+      completionCard.style.alignItems = "center";
+      completionCard.style.gap = "20px";
+      completionCard.style.position = "relative";
+      completionCard.style.overflow = "hidden";
+      mainContainer.appendChild(completionCard);
+      
+      // Sertifika görünümü
+      let certificate = document.createElement("div");
+      certificate.style.width = "100%";
+      certificate.style.padding = "20px";
+      certificate.style.border = "2px solid #9b59b6";
+      certificate.style.borderRadius = "10px";
+      certificate.style.backgroundColor = "#f9f9f9";
+      certificate.style.textAlign = "center";
+      certificate.style.marginBottom = "20px";
+      
+      // Sertifika içeriği
+      certificate.innerHTML = `
+        <h3 style="color: #000000; margin-bottom: 10px;">🏆 Veri Koruma Sertifikası 🏆</h3>
+        <p style="color: #000000; margin-bottom: 15px;">Veri Gizliliği Labirentini başarıyla tamamladın!</p>
+        <p style="color: #000000; margin-bottom: 5px;"><strong>Doğru Karar Sayısı:</strong> ${gameState.correctAnswers}/5</p>
+      `;
+      completionCard.appendChild(certificate);
+      
+      // Tebrikler mesajı
+      let congratsMessage = document.createElement("div");
+      congratsMessage.style.textAlign = "center";
+      congratsMessage.style.marginBottom = "20px";
+      congratsMessage.style.color = "#000000";
+      
+      // Kazanılan beceriler
+      congratsMessage.innerHTML = `
+        <h3>Tebrikler! 🎉</h3>
+        <p>Veri gizliliği konusunda önemli beceriler kazandın:</p>
+        <ul style="text-align: left; padding-left: 20px;">
+          <li>Kişisel verilerin korunmasının önemini öğrendin</li>
+          <li>Hangi bilgilerin paylaşılabilir olduğunu anladın</li>
+          <li>Çevrimiçi güvenliğin temel prensiplerini kavradın</li>
+        </ul>
+      `;
+      completionCard.appendChild(congratsMessage);
+      
+      // Sonraki bulmacaya geçiş butonu
+      let nextButton = document.createElement("button");
+      nextButton.innerText = "Sonraki Bulmaca";
+      nextButton.style.backgroundColor = "#9b59b6";
+      nextButton.style.color = "white";
+      nextButton.style.border = "none";
+      nextButton.style.padding = "12px 24px";
+      nextButton.style.borderRadius = "30px";
+      nextButton.style.fontSize = "1em";
+      nextButton.style.fontWeight = "bold";
+      nextButton.style.cursor = "pointer";
+      nextButton.style.transition = "background-color 0.3s";
+      nextButton.style.boxShadow = "0 3px 6px rgba(0, 0, 0, 0.1)";
+      nextButton.style.margin = "10px 0";
+      
+      nextButton.addEventListener("mouseover", function() {
+        this.style.backgroundColor = "#8e44ad";
+      });
+      
+      nextButton.addEventListener("mouseout", function() {
+        this.style.backgroundColor = "#9b59b6";
+      });
+      
+      nextButton.addEventListener("click", function() {
+        playClickSound();
+        goNextPuzzle();
+      });
+      
+      completionCard.appendChild(nextButton);
+      
+      // Konfeti efekti
+      addConfetti();
+    }
+    
+    // Konfeti efekti
+    function addConfetti() {
+      for (let i = 0; i < 100; i++) {
+        let confetti = document.createElement("div");
+        confetti.style.position = "absolute";
+        confetti.style.width = Math.random() * 10 + 5 + "px";
+        confetti.style.height = Math.random() * 5 + 10 + "px";
+        confetti.style.backgroundColor = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#1abc9c"][Math.floor(Math.random() * 6)];
+        confetti.style.borderRadius = "2px";
+        confetti.style.top = "-10px";
+        confetti.style.left = Math.random() * 100 + "%";
+        confetti.style.transform = "rotate(" + Math.random() * 360 + "deg)";
+        confetti.style.opacity = Math.random() * 0.5 + 0.5;
+        confetti.style.animation = "confetti-fall 3s linear forwards";
+        mainContainer.appendChild(confetti);
+      }
+      
+      // Konfeti animasyonu stil
+      let style = document.createElement("style");
+      style.innerHTML = `
+        @keyframes confetti-fall {
+          0% {
+            transform: translateY(-10px) rotate(0deg) scale(1);
+          }
+          100% {
+            transform: translateY(500px) rotate(360deg) scale(0);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // Başlangıçta yönlendirme mesajı
+    instructionMessage.innerText = "Labirente başlamak için yeşil BAŞLA noktasına tıkla!";
+    
+    // Başlangıçta başlangıç noktasını kullanılabilir yap
+    gameState.availablePoints = [0, 1]; // Başlangıç ve 1. soru erişilebilir
+    
+    // Başlangıçta düğüm görünümlerini güncelle
+    updateDecisionPointsAppearance();
+  }
 
 function setupPlanet6Puzzle2() {
   puzzleHintText.innerText = "IPUCU: Yapay zekanın etik kullanımı konusunda düşün ve doğru seçenekleri bul.";
@@ -12692,7 +13703,7 @@ function setupPlanet6Puzzle5() {
 
   // Başlık
   let title = document.createElement("h2");
-  title.innerHTML = "🤖 Gelecekteki Robotlar Sınıflandırma Oyunu";
+  title.innerHTML = "🤖 Gelecek Robotlar Sınıflandırma Oyunu";
   title.style.color = "#000000";
   title.style.textAlign = "center";
   title.style.margin = "0";
@@ -12721,15 +13732,7 @@ function setupPlanet6Puzzle5() {
   infoCard.appendChild(infoText);
   mainContainer.appendChild(infoCard);
 
-  // Kategorileri açıklayan kutu
-  let categoriesInfo = document.createElement("div");
-  categoriesInfo.style.width = "100%";
-  categoriesInfo.style.display = "flex";
-  categoriesInfo.style.justifyContent = "space-between";
-  categoriesInfo.style.marginBottom = "15px";
-  categoriesInfo.style.gap = "10px";
-  
-  // Kategori renk ve simgeler
+  // Kategori renk ve simgeler tanımı (sadece iç kullanım için)
   const categoryStyles = {
     "safe": {
       color: "#2ecc71",
@@ -12750,37 +13753,8 @@ function setupPlanet6Puzzle5() {
       border: "2px solid #e74c3c"
     }
   };
-  
-  // Kategori bilgi kutucukları
-  Object.entries(categoryStyles).forEach(([key, style]) => {
-    let categoryBox = document.createElement("div");
-    categoryBox.style.flex = "1";
-    categoryBox.style.backgroundColor = style.bg;
-    categoryBox.style.border = style.border;
-    categoryBox.style.borderRadius = "8px";
-    categoryBox.style.padding = "10px";
-    categoryBox.style.textAlign = "center";
-    
-    let categoryTitle = document.createElement("div");
-    categoryTitle.style.fontWeight = "bold";
-    categoryTitle.style.color = "#000000";
-    categoryTitle.style.marginBottom = "5px";
-    
-    if (key === "safe") {
-      categoryTitle.innerHTML = `${style.icon} Faydalı ve Güvenli`;
-    } else if (key === "caution") {
-      categoryTitle.innerHTML = `${style.icon} Faydalı ama Dikkat Edilmeli`;
-    } else {
-      categoryTitle.innerHTML = `${style.icon} Dikkatli Olunmalı`;
-    }
-    
-    categoryBox.appendChild(categoryTitle);
-    categoriesInfo.appendChild(categoryBox);
-  });
-  
-  mainContainer.appendChild(categoriesInfo);
 
-  // Oyun alanı
+  // Oyun alanı - ortadaki kategori kutucukları olmadan direkt olarak oluşturulacak
   let gameArea = document.createElement("div");
   gameArea.style.width = "100%";
   gameArea.style.display = "flex";
@@ -12820,373 +13794,373 @@ function setupPlanet6Puzzle5() {
   progressContainer.appendChild(progressText);
   gameArea.appendChild(progressContainer);
 
-  // Senaryo kartı
-  let scenarioCard = document.createElement("div");
-  scenarioCard.style.width = "100%";
-  scenarioCard.style.backgroundColor = "white";
-  scenarioCard.style.borderRadius = "10px";
-  scenarioCard.style.padding = "20px";
-  scenarioCard.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
-  scenarioCard.style.marginBottom = "15px";
-  scenarioCard.style.position = "relative";
+    // Senaryo kartı
+    let scenarioCard = document.createElement("div");
+    scenarioCard.style.width = "100%";
+    scenarioCard.style.backgroundColor = "white";
+    scenarioCard.style.borderRadius = "10px";
+    scenarioCard.style.padding = "20px";
+    scenarioCard.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+    scenarioCard.style.marginBottom = "15px";
+    scenarioCard.style.position = "relative";
+    
+    let scenarioTitle = document.createElement("div");
+    scenarioTitle.style.fontSize = "1.1em";
+    scenarioTitle.style.fontWeight = "bold";
+    scenarioTitle.style.marginBottom = "15px";
+    scenarioTitle.style.color = "#000000";
+    scenarioTitle.style.textAlign = "center";
+    scenarioTitle.innerText = "Gelecek Senaryosu";
+    
+    let scenarioText = document.createElement("div");
+    scenarioText.style.fontSize = "1em";
+    scenarioText.style.color = "#000000";
+    scenarioText.style.textAlign = "center";
+    scenarioText.style.padding = "10px";
+    scenarioText.style.minHeight = "60px";
+    
+    let scenarioImage = document.createElement("div");
+    scenarioImage.style.fontSize = "3em";
+    scenarioImage.style.textAlign = "center";
+    scenarioImage.style.marginBottom = "10px";
+    
+    scenarioCard.appendChild(scenarioImage);
+    scenarioCard.appendChild(scenarioTitle);
+    scenarioCard.appendChild(scenarioText);
+    gameArea.appendChild(scenarioCard);
   
-  let scenarioTitle = document.createElement("div");
-  scenarioTitle.style.fontSize = "1.1em";
-  scenarioTitle.style.fontWeight = "bold";
-  scenarioTitle.style.marginBottom = "15px";
-  scenarioTitle.style.color = "#000000";
-  scenarioTitle.style.textAlign = "center";
-  scenarioTitle.innerText = "Gelecek Senaryosu";
-  
-  let scenarioText = document.createElement("div");
-  scenarioText.style.fontSize = "1em";
-  scenarioText.style.color = "#000000";
-  scenarioText.style.textAlign = "center";
-  scenarioText.style.padding = "10px";
-  scenarioText.style.minHeight = "60px";
-  
-  let scenarioImage = document.createElement("div");
-  scenarioImage.style.fontSize = "3em";
-  scenarioImage.style.textAlign = "center";
-  scenarioImage.style.marginBottom = "10px";
-  
-  scenarioCard.appendChild(scenarioImage);
-  scenarioCard.appendChild(scenarioTitle);
-  scenarioCard.appendChild(scenarioText);
-  gameArea.appendChild(scenarioCard);
-
-  // Buton container
-  let buttonContainer = document.createElement("div");
-  buttonContainer.style.display = "flex";
-  buttonContainer.style.justifyContent = "space-between";
-  buttonContainer.style.width = "100%";
-  buttonContainer.style.gap = "10px";
-  gameArea.appendChild(buttonContainer);
-  
-  // Kategori butonları
-  const categories = [
-    { id: "safe", text: "Faydalı ve Güvenli" },
-    { id: "caution", text: "Faydalı ama Dikkat Edilmeli" },
-    { id: "warning", text: "Dikkatli Olunmalı" }
-  ];
-  
-  categories.forEach(category => {
-    let button = document.createElement("button");
-    button.id = `btn-${category.id}`;
-    button.style.flex = "1";
-    button.style.padding = "12px 10px";
-    button.style.backgroundColor = categoryStyles[category.id].bg;
-    button.style.border = categoryStyles[category.id].border;
-    button.style.borderRadius = "8px";
-    button.style.cursor = "pointer";
-    button.style.fontSize = "0.9em";
-    button.style.fontWeight = "bold";
-    button.style.color = "#000000";
-    button.style.display = "flex";
-    button.style.flexDirection = "column";
-    button.style.alignItems = "center";
-    button.style.justifyContent = "center";
-    button.style.textAlign = "center";
-    button.style.minHeight = "70px";
+    // Buton container
+    let buttonContainer = document.createElement("div");
+    buttonContainer.style.display = "flex";
+    buttonContainer.style.justifyContent = "space-between";
+    buttonContainer.style.width = "100%";
+    buttonContainer.style.gap = "10px";
+    gameArea.appendChild(buttonContainer);
     
-    let buttonIcon = document.createElement("div");
-    buttonIcon.style.fontSize = "1.5em";
-    buttonIcon.style.marginBottom = "5px";
-    buttonIcon.innerHTML = categoryStyles[category.id].icon;
+    // Kategori butonları
+    const categories = [
+      { id: "safe", text: "Faydalı ve Güvenli" },
+      { id: "caution", text: "Faydalı ama Dikkat Edilmeli" },
+      { id: "warning", text: "Dikkatli Olunmalı" }
+    ];
     
-    let buttonText = document.createElement("div");
-    buttonText.innerText = category.text;
-    
-    button.appendChild(buttonIcon);
-    button.appendChild(buttonText);
-    
-    button.addEventListener("mouseenter", function() {
-      this.style.transform = "translateY(-3px)";
-      this.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
-    });
-    
-    button.addEventListener("mouseleave", function() {
-      this.style.transform = "translateY(0)";
-      this.style.boxShadow = "none";
-    });
-    
-    buttonContainer.appendChild(button);
-  });
-  
-  // Geri bildirim alanı
-  let feedbackArea = document.createElement("div");
-  feedbackArea.style.width = "100%";
-  feedbackArea.style.minHeight = "80px";
-  feedbackArea.style.padding = "15px";
-  feedbackArea.style.borderRadius = "8px";
-  feedbackArea.style.marginTop = "10px";
-  feedbackArea.style.display = "none";
-  gameArea.appendChild(feedbackArea);
-
-  // Senaryolar
-  const scenarios = [
-    {
-      id: 1,
-      text: "Yaşlı insanlara yemek yapmalarında ve ev temizliğinde yardım eden bir robot",
-      category: "safe",
-      emoji: "👵",
-      feedback: "Bu robot yaşlı insanların daha bağımsız yaşamasına yardımcı olur. Kimseye zarar vermez ve faydalıdır."
-    },
-    {
-      id: 2,
-      text: "Evdeki tüm konuşmaları dinleyen ve kaydeden bir yapay zeka asistanı",
-      category: "warning",
-      emoji: "🎤",
-      feedback: "Bu durum mahremiyet sorunları yaratır. İnsanların izni olmadan konuşmalarını kaydetmek etik değildir."
-    },
-    {
-      id: 3,
-      text: "Trafikte sürücülere yardımcı olan ama her zaman insan kontrolü gerektiren araç",
-      category: "caution",
-      emoji: "🚗",
-      feedback: "Araç sürücüye yardımcı oluyor ama tamamen güvenilir değil. İnsan kontrolü gerektirmesi önemli bir güvenlik önlemidir."
-    },
-    {
-      id: 4,
-      text: "Öğrencilere matematik ve fen konularında yardımcı olan eğitim robotu",
-      category: "safe",
-      emoji: "🧮",
-      feedback: "Eğitim robotları öğrencilere destek olarak faydalı bir amaca hizmet eder ve güvenlidir."
-    },
-    {
-      id: 5,
-      text: "İnsanların sosyal medya alışkanlıklarına göre onlar hakkında kararlar veren yapay zeka",
-      category: "warning",
-      emoji: "📱",
-      feedback: "İnsanlar hakkında sosyal medya verilerine dayanarak karar vermek yanlış yargılara ve ayrımcılığa yol açabilir."
-    },
-    {
-      id: 6,
-      text: "Hastalara ilaç vermeden önce doktordan onay isteyen hastane robotu",
-      category: "caution",
-      emoji: "💊",
-      feedback: "Robot faydalı bir iş yapıyor ama hayati önem taşıyan sağlık konularında son kararı insana bırakması önemlidir."
-    },
-    {
-      id: 7,
-      text: "İnsanların yüzünü tanıyan ve izinsiz fotoğraflarını çeken güvenlik kameraları",
-      category: "warning",
-      emoji: "📷",
-      feedback: "İzinsiz fotoğraf çekmek insanların mahremiyetini ihlal eder ve etik değildir."
-    },
-    {
-      id: 8,
-      text: "Çiftçilere hava durumunu ve bitki sağlığını analiz etmekte yardımcı olan uygulama",
-      category: "safe",
-      emoji: "🌱",
-      feedback: "Bu uygulama çiftçilere tarımsal faaliyetlerinde yardımcı olur ve daha verimli ürün yetiştirmelerini sağlar."
-    }
-  ];
-
-  // Oyun durumu
-  let gameState = {
-    currentScenario: 0,
-    correctAnswers: 0,
-    totalScenarios: scenarios.length
-  };
-
-  // Senaryo gösterme fonksiyonu
-  function showScenario(index) {
-    if (index >= scenarios.length) {
-      showCompletionScreen();
-      return;
-    }
-    
-    const scenario = scenarios[index];
-    
-    // İlerleme güncelleme
-    progressFill.style.width = `${(index / scenarios.length) * 100}%`;
-    progressText.innerText = `Senaryo: ${index + 1}/${scenarios.length}`;
-    
-    // Senaryo içeriği
-    scenarioImage.innerText = scenario.emoji;
-    scenarioTitle.innerText = `Gelecek Senaryosu #${index + 1}`;
-    scenarioText.innerText = scenario.text;
-    
-    // Geri bildirim alanını gizle
-    feedbackArea.style.display = "none";
-    
-    // Butonları aktif et
-    document.querySelectorAll("#btn-safe, #btn-caution, #btn-warning").forEach(btn => {
-      btn.disabled = false;
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
-    });
-  }
-
-  // Butonlara tıklama olayları
-  document.querySelectorAll("#btn-safe, #btn-caution, #btn-warning").forEach(btn => {
-    btn.addEventListener("click", function() {
-      const selectedCategory = this.id.replace("btn-", "");
-      const currentScenario = scenarios[gameState.currentScenario];
+    categories.forEach(category => {
+      let button = document.createElement("button");
+      button.id = `btn-${category.id}`;
+      button.style.flex = "1";
+      button.style.padding = "12px 10px";
+      button.style.backgroundColor = categoryStyles[category.id].bg;
+      button.style.border = categoryStyles[category.id].border;
+      button.style.borderRadius = "8px";
+      button.style.cursor = "pointer";
+      button.style.fontSize = "0.9em";
+      button.style.fontWeight = "bold";
+      button.style.color = "#000000";
+      button.style.display = "flex";
+      button.style.flexDirection = "column";
+      button.style.alignItems = "center";
+      button.style.justifyContent = "center";
+      button.style.textAlign = "center";
+      button.style.minHeight = "70px";
       
-      // Tüm butonları devre dışı bırak
-      document.querySelectorAll("#btn-safe, #btn-caution, #btn-warning").forEach(b => {
-        b.disabled = true;
-        b.style.opacity = "0.7";
-        b.style.cursor = "default";
+      let buttonIcon = document.createElement("div");
+      buttonIcon.style.fontSize = "1.5em";
+      buttonIcon.style.marginBottom = "5px";
+      buttonIcon.innerHTML = categoryStyles[category.id].icon;
+      
+      let buttonText = document.createElement("div");
+      buttonText.innerText = category.text;
+      
+      button.appendChild(buttonIcon);
+      button.appendChild(buttonText);
+      
+      button.addEventListener("mouseenter", function() {
+        this.style.transform = "translateY(-3px)";
+        this.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
       });
       
-      // Geri bildirim göster
-      feedbackArea.style.display = "block";
-      feedbackArea.innerHTML = "";
+      button.addEventListener("mouseleave", function() {
+        this.style.transform = "translateY(0)";
+        this.style.boxShadow = "none";
+      });
       
-      let feedbackIcon = document.createElement("div");
-      feedbackIcon.style.fontSize = "1.5em";
-      feedbackIcon.style.marginBottom = "5px";
-      feedbackIcon.style.textAlign = "center";
-      
-      let feedbackText = document.createElement("div");
-      feedbackText.style.color = "#000000";
-      
-      // Doğru/yanlış kontrolü
-      if (selectedCategory === currentScenario.category) {
-        // Doğru cevap
-        feedbackArea.style.backgroundColor = "rgba(46, 204, 113, 0.1)";
-        feedbackArea.style.border = "2px solid #2ecc71";
-        
-        feedbackIcon.innerHTML = "✅";
-        feedbackText.innerHTML = `<strong>Doğru!</strong> ${currentScenario.feedback}`;
-        
-        gameState.correctAnswers++;
-        playCorrectSound();
-      } else {
-        // Yanlış cevap
-        feedbackArea.style.backgroundColor = "rgba(231, 76, 60, 0.1)";
-        feedbackArea.style.border = "2px solid #e74c3c";
-        
-        feedbackIcon.innerHTML = "❌";
-        
-        // Doğru kategorinin adını göster
-        let correctCategory = "";
-        if (currentScenario.category === "safe") {
-          correctCategory = "Faydalı ve Güvenli";
-        } else if (currentScenario.category === "caution") {
-          correctCategory = "Faydalı ama Dikkat Edilmeli";
-        } else {
-          correctCategory = "Dikkatli Olunmalı";
-        }
-        
-        feedbackText.innerHTML = `<strong>Tekrar düşün!</strong> Bu senaryo "${correctCategory}" kategorisine daha uygun. ${currentScenario.feedback}`;
-        
-        playWrongSound();
+      buttonContainer.appendChild(button);
+    });
+    
+    // Geri bildirim alanı
+    let feedbackArea = document.createElement("div");
+    feedbackArea.style.width = "100%";
+    feedbackArea.style.minHeight = "80px";
+    feedbackArea.style.padding = "15px";
+    feedbackArea.style.borderRadius = "8px";
+    feedbackArea.style.marginTop = "10px";
+    feedbackArea.style.display = "none";
+    gameArea.appendChild(feedbackArea);
+  
+    // Senaryolar
+    const scenarios = [
+      {
+        id: 1,
+        text: "Yaşlı insanlara yemek yapmalarında ve ev temizliğinde yardım eden bir robot",
+        category: "safe",
+        emoji: "👵",
+        feedback: "Bu robot yaşlı insanların daha bağımsız yaşamasına yardımcı olur. Kimseye zarar vermez ve faydalıdır."
+      },
+      {
+        id: 2,
+        text: "Evdeki tüm konuşmaları dinleyen ve kaydeden bir yapay zeka asistanı",
+        category: "warning",
+        emoji: "🎤",
+        feedback: "Bu durum mahremiyet sorunları yaratır. İnsanların izni olmadan konuşmalarını kaydetmek etik değildir."
+      },
+      {
+        id: 3,
+        text: "Trafikte sürücülere yardımcı olan ama her zaman insan kontrolü gerektiren araç",
+        category: "caution",
+        emoji: "🚗",
+        feedback: "Araç sürücüye yardımcı oluyor ama tamamen güvenilir değil. İnsan kontrolü gerektirmesi önemli bir güvenlik önlemidir."
+      },
+      {
+        id: 4,
+        text: "Öğrencilere matematik ve fen konularında yardımcı olan eğitim robotu",
+        category: "safe",
+        emoji: "🧮",
+        feedback: "Eğitim robotları öğrencilere destek olarak faydalı bir amaca hizmet eder ve güvenlidir."
+      },
+      {
+        id: 5,
+        text: "İnsanların sosyal medya alışkanlıklarına göre onlar hakkında kararlar veren yapay zeka",
+        category: "warning",
+        emoji: "📱",
+        feedback: "İnsanlar hakkında sosyal medya verilerine dayanarak karar vermek yanlış yargılara ve ayrımcılığa yol açabilir."
+      },
+      {
+        id: 6,
+        text: "Hastalara ilaç vermeden önce doktordan onay isteyen hastane robotu",
+        category: "caution",
+        emoji: "💊",
+        feedback: "Robot faydalı bir iş yapıyor ama hayati önem taşıyan sağlık konularında son kararı insana bırakması önemlidir."
+      },
+      {
+        id: 7,
+        text: "İnsanların yüzünü tanıyan ve izinsiz fotoğraflarını çeken güvenlik kameraları",
+        category: "warning",
+        emoji: "📷",
+        feedback: "İzinsiz fotoğraf çekmek insanların mahremiyetini ihlal eder ve etik değildir."
+      },
+      {
+        id: 8,
+        text: "Çiftçilere hava durumunu ve bitki sağlığını analiz etmekte yardımcı olan uygulama",
+        category: "safe",
+        emoji: "🌱",
+        feedback: "Bu uygulama çiftçilere tarımsal faaliyetlerinde yardımcı olur ve daha verimli ürün yetiştirmelerini sağlar."
+      }
+    ];
+  
+    // Oyun durumu
+    let gameState = {
+      currentScenario: 0,
+      correctAnswers: 0,
+      totalScenarios: scenarios.length
+    };
+  
+    // Senaryo gösterme fonksiyonu
+    function showScenario(index) {
+      if (index >= scenarios.length) {
+        showCompletionScreen();
+        return;
       }
       
-      feedbackArea.appendChild(feedbackIcon);
-      feedbackArea.appendChild(feedbackText);
+      const scenario = scenarios[index];
       
-      // 2 saniye sonra bir sonraki senaryoya geç
-      setTimeout(() => {
-        gameState.currentScenario++;
-        showScenario(gameState.currentScenario);
-      }, 3000);
-    });
-  });
-
-  // İlk senaryoyu göster
-  showScenario(gameState.currentScenario);
-
-  // Tamamlama ekranı
-  function showCompletionScreen() {
-    // Mevcut içeriği temizle
-    mainContainer.innerHTML = "";
-    
-    // Tamamlama kartı
-    let completionCard = document.createElement("div");
-    completionCard.style.width = "90%";
-    completionCard.style.maxWidth = "600px";
-    completionCard.style.backgroundColor = "white";
-    completionCard.style.borderRadius = "12px";
-    completionCard.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.1)";
-    completionCard.style.padding = "25px";
-    completionCard.style.display = "flex";
-    completionCard.style.flexDirection = "column";
-    completionCard.style.alignItems = "center";
-    completionCard.style.gap = "20px";
-    completionCard.style.position = "relative";
-    completionCard.style.overflow = "hidden";
-    mainContainer.appendChild(completionCard);
-    
-    // Sertifika görünümü
-    let certificate = document.createElement("div");
-    certificate.style.width = "100%";
-    certificate.style.padding = "20px";
-    certificate.style.border = "2px solid #9b59b6";
-    certificate.style.borderRadius = "10px";
-    certificate.style.backgroundColor = "#f9f9f9";
-    certificate.style.textAlign = "center";
-    certificate.style.marginBottom = "20px";
-    
-    // Sertifika içeriği
-    certificate.innerHTML = `
-      <h3 style="color: #000000; margin-bottom: 10px;">🏆 Gelecek Teknolojileri Değerlendirme Uzmanı 🏆</h3>
-      <p style="color: #000000; margin-bottom: 15px;">Tebrikler! Tüm senaryoları değerlendirdin!</p>
-      <p style="color: #000000; margin-bottom: 5px;"><strong>Doğru Cevaplar:</strong> ${gameState.correctAnswers}/${gameState.totalScenarios}</p>
-    `;
-    completionCard.appendChild(certificate);
-    
-    // Tebrikler mesajı
-    let congratsMessage = document.createElement("div");
-    congratsMessage.style.textAlign = "center";
-    congratsMessage.style.marginBottom = "20px";
-    congratsMessage.style.color = "#000000";
-    
-    // Kazanılan beceriler
-    congratsMessage.innerHTML = `
-      <h3>Harika iş! 🎉</h3>
-      <p>Artık gelecekteki teknolojileri etik açıdan değerlendirebiliyorsun!</p>
-      <ul style="text-align: left; padding-left: 20px;">
-        <li>Faydalı ve güvenli teknolojileri tanımayı öğrendin</li>
-        <li>Dikkatli olunması gereken durumları fark edebiliyorsun</li>
-        <li>Teknolojinin etik kullanımının önemini kavradın</li>
-      </ul>
-      <p style="margin-top: 15px;">Bu bilgiler, gelecekteki teknolojileri daha bilinçli değerlendirmene yardımcı olacak!</p>
-    `;
-    completionCard.appendChild(congratsMessage);
-    
-    // Konfeti efekti
-    addConfetti();
-    
-    // Sonraki bulmacaya otomatik geçiş
-    setTimeout(() => {
-      goNextPuzzle();
-    }, 5000);
-  }
+      // İlerleme güncelleme
+      progressFill.style.width = `${(index / scenarios.length) * 100}%`;
+      progressText.innerText = `Senaryo: ${index + 1}/${scenarios.length}`;
+      
+      // Senaryo içeriği
+      scenarioImage.innerText = scenario.emoji;
+      scenarioTitle.innerText = `Gelecek Senaryosu #${index + 1}`;
+      scenarioText.innerText = scenario.text;
+      
+      // Geri bildirim alanını gizle
+      feedbackArea.style.display = "none";
+      
+      // Butonları aktif et
+      document.querySelectorAll("#btn-safe, #btn-caution, #btn-warning").forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+      });
+    }
   
-  // Konfeti efekti
-  function addConfetti() {
-    for (let i = 0; i < 100; i++) {
-      let confetti = document.createElement("div");
-      confetti.style.position = "absolute";
-      confetti.style.width = Math.random() * 10 + 5 + "px";
-      confetti.style.height = Math.random() * 5 + 10 + "px";
-      confetti.style.backgroundColor = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#1abc9c"][Math.floor(Math.random() * 6)];
-      confetti.style.borderRadius = "2px";
-      confetti.style.top = "-10px";
-      confetti.style.left = Math.random() * 100 + "%";
-      confetti.style.transform = "rotate(" + Math.random() * 360 + "deg)";
-      confetti.style.opacity = Math.random() * 0.5 + 0.5;
-      confetti.style.animation = "confetti-fall 3s linear forwards";
-      mainContainer.appendChild(confetti);
+    // Butonlara tıklama olayları
+    document.querySelectorAll("#btn-safe, #btn-caution, #btn-warning").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const selectedCategory = this.id.replace("btn-", "");
+        const currentScenario = scenarios[gameState.currentScenario];
+        
+        // Tüm butonları devre dışı bırak
+        document.querySelectorAll("#btn-safe, #btn-caution, #btn-warning").forEach(b => {
+          b.disabled = true;
+          b.style.opacity = "0.7";
+          b.style.cursor = "default";
+        });
+        
+        // Geri bildirim göster
+        feedbackArea.style.display = "block";
+        feedbackArea.innerHTML = "";
+        
+        let feedbackIcon = document.createElement("div");
+        feedbackIcon.style.fontSize = "1.5em";
+        feedbackIcon.style.marginBottom = "5px";
+        feedbackIcon.style.textAlign = "center";
+        
+        let feedbackText = document.createElement("div");
+        feedbackText.style.color = "#000000";
+        
+        // Doğru/yanlış kontrolü
+        if (selectedCategory === currentScenario.category) {
+          // Doğru cevap
+          feedbackArea.style.backgroundColor = "rgba(46, 204, 113, 0.1)";
+          feedbackArea.style.border = "2px solid #2ecc71";
+          
+          feedbackIcon.innerHTML = "✅";
+          feedbackText.innerHTML = `<strong>Doğru!</strong> ${currentScenario.feedback}`;
+          
+          gameState.correctAnswers++;
+          playCorrectSound();
+        } else {
+          // Yanlış cevap
+          feedbackArea.style.backgroundColor = "rgba(231, 76, 60, 0.1)";
+          feedbackArea.style.border = "2px solid #e74c3c";
+          
+          feedbackIcon.innerHTML = "❌";
+          
+          // Doğru kategorinin adını göster
+          let correctCategory = "";
+          if (currentScenario.category === "safe") {
+            correctCategory = "Faydalı ve Güvenli";
+          } else if (currentScenario.category === "caution") {
+            correctCategory = "Faydalı ama Dikkat Edilmeli";
+          } else {
+            correctCategory = "Dikkatli Olunmalı";
+          }
+          
+          feedbackText.innerHTML = `<strong>Tekrar düşün!</strong> Bu senaryo "${correctCategory}" kategorisine daha uygun. ${currentScenario.feedback}`;
+          
+          playWrongSound();
+        }
+        
+        feedbackArea.appendChild(feedbackIcon);
+        feedbackArea.appendChild(feedbackText);
+        
+        // 2 saniye sonra bir sonraki senaryoya geç
+        setTimeout(() => {
+          gameState.currentScenario++;
+          showScenario(gameState.currentScenario);
+        }, 3000);
+      });
+    });
+  
+    // İlk senaryoyu göster
+    showScenario(gameState.currentScenario);
+  
+    // Tamamlama ekranı
+    function showCompletionScreen() {
+      // Mevcut içeriği temizle
+      mainContainer.innerHTML = "";
+      
+      // Tamamlama kartı
+      let completionCard = document.createElement("div");
+      completionCard.style.width = "90%";
+      completionCard.style.maxWidth = "600px";
+      completionCard.style.backgroundColor = "white";
+      completionCard.style.borderRadius = "12px";
+      completionCard.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.1)";
+      completionCard.style.padding = "25px";
+      completionCard.style.display = "flex";
+      completionCard.style.flexDirection = "column";
+      completionCard.style.alignItems = "center";
+      completionCard.style.gap = "20px";
+      completionCard.style.position = "relative";
+      completionCard.style.overflow = "hidden";
+      mainContainer.appendChild(completionCard);
+      
+      // Sertifika görünümü
+      let certificate = document.createElement("div");
+      certificate.style.width = "100%";
+      certificate.style.padding = "20px";
+      certificate.style.border = "2px solid #9b59b6";
+      certificate.style.borderRadius = "10px";
+      certificate.style.backgroundColor = "#f9f9f9";
+      certificate.style.textAlign = "center";
+      certificate.style.marginBottom = "20px";
+      
+      // Sertifika içeriği
+      certificate.innerHTML = `
+        <h3 style="color: #000000; margin-bottom: 10px;">🏆 Gelecek Teknolojileri Değerlendirme Uzmanı 🏆</h3>
+        <p style="color: #000000; margin-bottom: 15px;">Tebrikler! Tüm senaryoları değerlendirdin!</p>
+        <p style="color: #000000; margin-bottom: 5px;"><strong>Doğru Cevaplar:</strong> ${gameState.correctAnswers}/${gameState.totalScenarios}</p>
+      `;
+      completionCard.appendChild(certificate);
+      
+      // Tebrikler mesajı
+      let congratsMessage = document.createElement("div");
+      congratsMessage.style.textAlign = "center";
+      congratsMessage.style.marginBottom = "20px";
+      congratsMessage.style.color = "#000000";
+      
+      // Kazanılan beceriler
+      congratsMessage.innerHTML = `
+        <h3>Harika iş! 🎉</h3>
+        <p>Artık gelecekteki teknolojileri etik açıdan değerlendirebiliyorsun!</p>
+        <ul style="text-align: left; padding-left: 20px;">
+          <li>Faydalı ve güvenli teknolojileri tanımayı öğrendin</li>
+          <li>Dikkatli olunması gereken durumları fark edebiliyorsun</li>
+          <li>Teknolojinin etik kullanımının önemini kavradın</li>
+        </ul>
+        <p style="margin-top: 15px;">Bu bilgiler, gelecekteki teknolojileri daha bilinçli değerlendirmene yardımcı olacak!</p>
+      `;
+      completionCard.appendChild(congratsMessage);
+      
+      // Konfeti efekti
+      addConfetti();
+      
+      // Sonraki bulmacaya otomatik geçiş
+      setTimeout(() => {
+        goNextPuzzle();
+      }, 5000);
     }
     
-    // Konfeti animasyonu stil
-    let style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes confetti-fall {
-        0% {
-          transform: translateY(-10px) rotate(0deg) scale(1);
-        }
-        100% {
-          transform: translateY(500px) rotate(360deg) scale(0);
-        }
+    // Konfeti efekti
+    function addConfetti() {
+      for (let i = 0; i < 100; i++) {
+        let confetti = document.createElement("div");
+        confetti.style.position = "absolute";
+        confetti.style.width = Math.random() * 10 + 5 + "px";
+        confetti.style.height = Math.random() * 5 + 10 + "px";
+        confetti.style.backgroundColor = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#1abc9c"][Math.floor(Math.random() * 6)];
+        confetti.style.borderRadius = "2px";
+        confetti.style.top = "-10px";
+        confetti.style.left = Math.random() * 100 + "%";
+        confetti.style.transform = "rotate(" + Math.random() * 360 + "deg)";
+        confetti.style.opacity = Math.random() * 0.5 + 0.5;
+        confetti.style.animation = "confetti-fall 3s linear forwards";
+        mainContainer.appendChild(confetti);
       }
-    `;
-    document.head.appendChild(style);
+      
+      // Konfeti animasyonu stil
+      let style = document.createElement("style");
+      style.innerHTML = `
+        @keyframes confetti-fall {
+          0% {
+            transform: translateY(-10px) rotate(0deg) scale(1);
+          }
+          100% {
+            transform: translateY(500px) rotate(360deg) scale(0);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
   }
-}
